@@ -7,14 +7,14 @@ namespace VoronoiBruteForce
 {
     public struct Point
     {
-        public double x, y;
+        public int x, y;
         public Color color;
-        public Point(double x, double y)
+        public Point(int x, int y)
         {
             this.x = x;
             this.y = y;
         }
-        public Point(double x, double y, Color c) {
+        public Point(int x, int y, Color c) {
             this.x = x;
             this.y = y;
             color = c;
@@ -43,25 +43,39 @@ namespace VoronoiBruteForce
     {
         static void Main(string[] args)
         {
-            Point A = new Point(5, 5, Color.Aqua);
-            Point B = new Point(10, 10, Color.Beige);
-            Point C = new Point(60, 70, Color.SeaGreen);
-            int width = 100;
-            int height = 100;
-            List<Point> testSitesA = new List<Point>(){ A, B, C };
+            Point A = new Point(5, 5, Color.Pink);
+            Point B = new Point(5, 200, Color.IndianRed);
+            Point C = new Point(400, 400, Color.DeepSkyBlue);
+            Point D = new Point(20, 15, Color.DarkBlue);
+            Point E = new Point(100, 350, Color.DarkRed);
+            Point F = new Point(25, 350, Color.LightSkyBlue);
+            Point G = new Point(300, 10, Color.Blue);
+
+            int width = 500;
+            int height = 500;
+            List<Point> testSitesA = new List<Point>(){ A, B, C, D, E, F, G };
 
             BruteForceCalculation algoTest1 = new BruteForceCalculation(testSitesA, width, height);
             Color[,] res1 = algoTest1.CalculateVoronoiDiagram();
-            SaveAsImage(res1, width, height);
+            SaveAsImage(res1, testSitesA, width, height);
         }
 
-        public static void SaveAsImage (Color[,] voronoi, int width, int height) {
-            Bitmap image = new Bitmap(width, height, PixelFormat.Canonical);
+        public static void SaveAsImage (Color[,] voronoi, List<Point> sites, int width, int height) {
+            Bitmap image = new Bitmap(width, height);
 
-            for (int row = 0; row < width; row++) {
-                for (int col = 0; col < height; col++) {
+            for (int row = 0; row < height; row++) {
+                for (int col = 0; col < width; col++) {
                     image.SetPixel(col, row, voronoi[col, row]);
                 }
+            }
+
+            // Note: graphics draws on top of the existing bitmap by reference
+            Graphics g = Graphics.FromImage(image);
+            SolidBrush whiteBrush = new SolidBrush(Color.White);
+            int circleRadius = 4;
+            foreach (Point site in sites)
+            {
+                g.FillEllipse(whiteBrush, site.x - circleRadius, site.y - circleRadius, circleRadius * 2, circleRadius * 2);
             }
             image.Save("img.bmp");
         }

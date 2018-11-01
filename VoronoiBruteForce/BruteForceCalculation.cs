@@ -22,7 +22,7 @@ namespace VoronoiBruteForce
         // Some information was gathered from this StackOverflow answer:
         // https://stackoverflow.com/a/85484
         public Color[,] CalculateVoronoiDiagram() {
-            Color[,] output = new Color[height, width];
+            Color[,] output = new Color[width, height];
 
             // row goes through each row from top to bottom
             for (int row = 0; row < height; row++) {
@@ -45,7 +45,7 @@ namespace VoronoiBruteForce
                             closestDistance = distance;
                         }
                     }
-                    output[row, col] = closestSite.color;
+                    output[col, row] = closestSite.color;
                 }
             }
             return output;
