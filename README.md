@@ -1,5 +1,5 @@
-# VoronoiDiagram
-Fortune's algorithm &amp; Bowyer–Watson algorithm
+# Voronoi Algorithm Analysis
+The Bowyer–Watson sollution compared to a brute force implementation.
 
 ## macOS
 If you're anything like me, you'll want to develop on your mac! To do so:
