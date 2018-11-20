@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-
 using System.Collections.Generic;
 
 namespace VoronoiBowyerWatson
@@ -41,18 +40,25 @@ namespace VoronoiBowyerWatson
 
         private void AddPoint(Point p){
             addedPoints.Add(p);
-            List<Vertex> toDelete = RemoveForPoint(p);
+            HashSet<Vertex> invalidVertices = InvalidAfterPoint(p);
+
+            List<Edge> boundary = Boundary(invalidVertices);
+
+            //remove bad vertices
+            triangles.Except(invalidVertices);
+
+            Retriangulate(boundary);
         }
 
-        private List<Vertex> RemoveForPoint(Point p){
+        private HashSet<Vertex> InvalidAfterPoint(Point p){
             Queue<Vertex> SearchQueue = new Queue<Vertex>();
-            HashSet<Vertex> toDelete = new HashSet<Vertex>();
+            HashSet<Vertex> invalidVertices = new HashSet<Vertex>();
             foreach (Vertex v in triangles)
             {
                 if (v.InCircumsphere(p))
                 {
                     SearchQueue.Enqueue(v);
-                    toDelete.Add(v);
+                    invalidVertices.Add(v);
                 }
             }
             while(SearchQueue.Count > 0){
@@ -62,16 +68,43 @@ namespace VoronoiBowyerWatson
                     if (neighbor == Vertex.nullVertex){
                         continue;
                     }
-                    else if (neighbor.InCircumsphere(p) && toDelete.Contains(neighbor))
+                    else if (neighbor.InCircumsphere(p) && invalidVertices.Contains(neighbor))
                     {
-                        toDelete.Add(neighbor);
+                        invalidVertices.Add(neighbor);
                         SearchQueue.Enqueue(neighbor);
                     }
                 }
             }
 
-            return new List<Vertex>(toDelete);
+            return invalidVertices;
 
+        }
+
+        private List<Edge> Boundary(HashSet<Vertex> vertices){
+
+            HashSet<Edge> boundary = new HashSet<Edge>();
+            
+            foreach(Vertex invalidVertex in vertices){
+                foreach(Vertex v in invalidVertex.neighbors){
+                    if(v == Vertex.nullVertex){
+                        // add the two points on this side... somehow
+                    }
+                    else if(!vertices.Contains(v)){
+                        List<Point> sharedPts = v.SharedPoints(invalidVertex);
+                        if(sharedPts.Count < 2){
+                            Console.WriteLine("Fewer than 2 points shared.  This shouldn't happen\n");
+                        }
+                        Edge e = new Edge(sharedPts[0], sharedPts[1], v);
+                        boundary.Add(e);
+                    }
+                }
+            }
+            return new List<Edge>(boundary);
+        }
+
+        private void Retriangulate(List<Edge> boundary)
+        {
+            //do stuff
         }
 
         public List<Vertex> Triangulate(){

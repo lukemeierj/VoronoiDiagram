@@ -18,7 +18,31 @@ namespace VoronoiBowyerWatson
             return Math.Sqrt(Math.Pow(a.x - b.x, 2) + Math.Pow(a.y - b.y, 2));
         }
         public double Distance(Point a){
-            return Math.Sqrt(Math.Pow(a.x - this.x, 2) + Math.Pow(a.y - this.y, 2));
+            return Distance(this, a);
+        }
+    }
+
+    public struct Edge
+    {
+        Point a;
+        Point b;
+        public List<Vertex> adjacentVertices { private set; get; }
+        public Vertex opposite {
+            get {
+                return adjacentVertices.Count > 0 ? adjacentVertices[0] : null;
+            }
+        }
+        public Edge(Point a, Point b, List<Vertex> vertices){
+            this.a = a;
+            this.b = b;
+            this.adjacentVertices = vertices;
+        }
+        public Edge(Point a, Point b, Vertex v)
+        {
+            this.a = a;
+            this.b = b;
+
+            adjacentVertices = new List<Vertex> { v };
         }
     }
 
@@ -50,6 +74,14 @@ namespace VoronoiBowyerWatson
 
         public bool InCircumsphere(Point p){
             return p.Distance(center) <= radius;
+        }
+
+        public static List<Point> SharedPoints(Vertex a, Vertex b){
+            return new List<Point>(a.points.Intersect(b.points));
+        }
+
+        public List<Point> SharedPoints(Vertex a){
+            return SharedPoints(this, a);
         }
     }
 }
