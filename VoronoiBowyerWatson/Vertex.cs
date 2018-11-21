@@ -66,8 +66,17 @@ namespace VoronoiBowyerWatson
         }
 
         public static Point CalculateCenter(List<Point> points){
-            double x = points.Sum(p => p.x) / 3;
-            double y = points.Sum(p => p.y) / 3;
+            Point a = points[0], b = points[1], c = points[2];
+
+            double det = 2 * (a.x * (b.y - c.y) + b.x * (c.y - a.y) + c.x * (a.y - b.y));
+            double x = 1 / det * ((Math.Pow(a.x, 2) + Math.Pow(a.y, 2)) * (b.y - c.y) 
+                                +(Math.Pow(b.x, 2) + Math.Pow(b.y, 2)) * (c.y - a.y) 
+                                +(Math.Pow(c.x, 2) + Math.Pow(c.y, 2)) * (a.y - b.y));
+            double y = 1 / det * ((Math.Pow(a.x, 2) + Math.Pow(a.y, 2)) * (c.x - b.x) 
+                                +(Math.Pow(b.x, 2) + Math.Pow(b.y, 2)) * (a.x - c.x) 
+                                +(Math.Pow(c.x, 2) + Math.Pow(c.y, 2)) * (b.x - a.x));
+
+
             return new Point(x, y);
             
         }
@@ -84,9 +93,6 @@ namespace VoronoiBowyerWatson
             return SharedPoints(this, a);
         }
         public Edge GetEdge(int i){
-            Console.WriteLine(i.ToString());
-            Console.WriteLine(points.Count);
-            Console.WriteLine(neighbors.Count);
 
             Point a = points[i % 3];
             Point b = points[(i+1) % 3];
