@@ -20,6 +20,9 @@ namespace VoronoiBowyerWatson
         public double Distance(Point a){
             return Distance(this, a);
         }
+        override public string ToString(){
+            return "(" + x + ", " + y + ")";
+        }
     }
 
     public struct Edge
@@ -44,6 +47,14 @@ namespace VoronoiBowyerWatson
 
             adjacentVertices = new List<Vertex> { v };
         }
+        public string EdgeString
+        {
+            get
+            {
+                return a.ToString() + " -- " + b.ToString();
+            }
+        }
+
     }
 
     public class Vertex

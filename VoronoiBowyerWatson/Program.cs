@@ -107,14 +107,17 @@ namespace VoronoiBowyerWatson
                 Width = 0.75F
             };
 
+
             foreach (Vertex vertex in tri.triangles)
             {
                 System.Drawing.Point[] drawPoints = new System.Drawing.Point[4];
 
                 for (int i = 0; i < vertex.points.Count; i++)
                 {
+                    Font f = new Font("Arial", 10);
                     Point p = vertex.points[i];
                     System.Drawing.Point pWithOffset = new System.Drawing.Point((int)Math.Floor(p.x) - xOffset, (int)Math.Floor(p.y) - yOffset);
+                    g.DrawString(p.ToString(), f, centerBrush, pWithOffset);
                     drawPoints[i] = pWithOffset;
                 }
                 drawPoints[3] = drawPoints[0];
