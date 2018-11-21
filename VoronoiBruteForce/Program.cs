@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 
 namespace VoronoiBruteForce
 {
@@ -77,7 +76,8 @@ namespace VoronoiBruteForce
             {
                 g.FillEllipse(whiteBrush, site.x - circleRadius, site.y - circleRadius, circleRadius * 2, circleRadius * 2);
             }
-            image.Save("img.bmp");
+            image.Save("img_brute_force.bmp");
+            whiteBrush.Dispose();
         }
 
         public static void PrintResults(List<Cell> cells) {

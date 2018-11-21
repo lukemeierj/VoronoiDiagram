@@ -48,7 +48,7 @@ namespace VoronoiBowyerWatson
 
     public class Vertex
     {
-        private List<Point> points;
+        public List<Point> points;
         public List<Vertex> neighbors { get; private set; }
 
         public Point center {  get; private set; }
