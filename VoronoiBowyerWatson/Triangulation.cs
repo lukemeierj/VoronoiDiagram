@@ -47,7 +47,7 @@ namespace VoronoiBowyerWatson
             //remove bad vertices
             triangles.Except(invalidVertices);
 
-            Retriangulate(boundary);
+            List<Vertex> newTriangles = Retriangulate(p, boundary);
         }
 
         private HashSet<Vertex> InvalidAfterPoint(Point p){
@@ -85,16 +85,10 @@ namespace VoronoiBowyerWatson
             HashSet<Edge> boundary = new HashSet<Edge>();
             
             foreach(Vertex invalidVertex in vertices){
-                foreach(Vertex v in invalidVertex.neighbors){
-                    if(v == Vertex.nullVertex){
-                        // add the two points on this side... somehow
-                    }
-                    else if(!vertices.Contains(v)){
-                        List<Point> sharedPts = v.SharedPoints(invalidVertex);
-                        if(sharedPts.Count < 2){
-                            Console.WriteLine("Fewer than 2 points shared.  This shouldn't happen\n");
-                        }
-                        Edge e = new Edge(sharedPts[0], sharedPts[1], v);
+                for (int i = 0; i < 3; i++){
+                    Edge e = invalidVertex.GetEdge(i);
+                    if (!vertices.Contains(e.opposite))
+                    {
                         boundary.Add(e);
                     }
                 }
@@ -102,10 +96,22 @@ namespace VoronoiBowyerWatson
             return new List<Edge>(boundary);
         }
 
-        private void Retriangulate(List<Edge> boundary)
+        private List<Vertex> Retriangulate(Point p, List<Edge> boundary)
         {
-            //do stuff
-        }
+            List<Vertex> newVertices = new List<Vertex>();
+            foreach(Edge e in boundary){
+                List<Point> points = new List<Point> { p, e.a, e.b };
+                List<Vertex> neighbors = new List<Vertex> { Vertex.nullVertex, e.opposite, Vertex.nullVertex };
+                newVertices.Add(new Vertex(points, neighbors));
+            }
+
+            int numTris = newVertices.Count;
+            for (int i = 0; i < numTris; i++){
+                newVertices[i].neighbors[0] = newVertices[(numTris + i - 1) % numTris];
+                newVertices[i].neighbors[2] = newVertices[(i + 1) % numTris];
+            }
+            return newVertices;
+         }
 
         public List<Vertex> Triangulate(){
             foreach(Point p in allPoints){

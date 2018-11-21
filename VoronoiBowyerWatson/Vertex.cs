@@ -24,8 +24,8 @@ namespace VoronoiBowyerWatson
 
     public struct Edge
     {
-        Point a;
-        Point b;
+        public Point a;
+        public Point b;
         public List<Vertex> adjacentVertices { private set; get; }
         public Vertex opposite {
             get {
@@ -82,6 +82,17 @@ namespace VoronoiBowyerWatson
 
         public List<Point> SharedPoints(Vertex a){
             return SharedPoints(this, a);
+        }
+        public Edge GetEdge(int i){
+            Console.WriteLine(i.ToString());
+            Console.WriteLine(points.Count);
+            Console.WriteLine(neighbors.Count);
+
+            Point a = points[i % 3];
+            Point b = points[(i+1) % 3];
+            Vertex op = neighbors[i % 3];
+
+            return new Edge(a, b, op);
         }
     }
 }
