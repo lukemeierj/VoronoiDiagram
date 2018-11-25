@@ -14,6 +14,7 @@ namespace VoronoiBowyerWatson
         public Triangulation(List<Point> points)
         {
             allPoints = points;
+            allPoints.Sort();
             AddSuperTriangle(points);
         }
 
@@ -54,10 +55,10 @@ namespace VoronoiBowyerWatson
 
             //remove bad vertices
             triangles = new List<Vertex>(triangles.Except(invalidVertices));
-            foreach(Edge e in boundary){
-                Console.WriteLine(e.EdgeString);
-            }
-            Console.WriteLine();
+            //foreach(Edge e in boundary){
+            //    Console.WriteLine(e.EdgeString);
+            //}
+            //Console.WriteLine();
 
             List<Vertex> newTriangles = Retriangulate(p, boundary);
 

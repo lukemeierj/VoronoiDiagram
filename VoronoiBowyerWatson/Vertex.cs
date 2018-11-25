@@ -6,7 +6,7 @@ using System.Linq;
 namespace VoronoiBowyerWatson
 {
 
-    public struct Point {
+    public struct Point : IComparable<Point> {
         public double x;
         public double y;
         public Point(double x, double y){
@@ -22,6 +22,18 @@ namespace VoronoiBowyerWatson
         }
         override public string ToString(){
             return "(" + x + ", " + y + ")";
+        }
+
+        // Compares by x-coordinate:
+        // (What Bowyer-Watson wants)
+        public int CompareTo(Point p) {
+            if (x < p.x) {
+                return -1;
+            } else if (x > p.x) {
+                return 1;
+            } else {
+                return 0;
+            }
         }
     }
 
