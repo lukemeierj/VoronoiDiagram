@@ -14,7 +14,7 @@ namespace VoronoiBowyerWatson
         public Triangulation(List<Point> points)
         {
             allPoints = points;
-            allPoints.Sort();
+            allPoints.Sort(); // various places says this improves efficiency 
             AddSuperTriangle(points);
         }
 
@@ -42,66 +42,53 @@ namespace VoronoiBowyerWatson
             List<Vertex> neighbors = new List<Vertex> { Vertex.nullVertex, Vertex.nullVertex, Vertex.nullVertex };
             triangles.Add(new Vertex(boundaries, neighbors));
 
-            allPoints.AddRange(boundaries);
+            // Add supertriangle to triangulation:
             addedPoints.AddRange(boundaries);
             superTriangle = boundaries;
         }
 
         private void AddPoint(Point p){
             addedPoints.Add(p);
-            HashSet<Vertex> invalidVertices = InvalidAfterPoint(p);
+            // Gets all the triangles whose circumspheres contain the added point: 
+            HashSet<Vertex> badTriangles = FindBadTriangles(p);
 
-            List<Edge> boundary = Boundary(invalidVertices);
+            // Remove the bad triangles from the total triangles:
+            triangles = new List<Vertex>(triangles.Except(badTriangles));
 
-            //remove bad vertices
-            triangles = new List<Vertex>(triangles.Except(invalidVertices));
-            //foreach(Edge e in boundary){
-            //    Console.WriteLine(e.EdgeString);
-            //}
-            //Console.WriteLine();
+            // Calculate the boundary edges of those triangles:
+            List<Edge> boundary = Boundary(badTriangles);
 
-            List<Vertex> newTriangles = Retriangulate(p, boundary);
+            // Get new triangulation between the boundary point and the added point:
+            List<Vertex> newTriangles = GetNewTriangulation(p, boundary);
 
+            // Save new triangles:
             triangles.AddRange(newTriangles);
         }
 
-        private HashSet<Vertex> InvalidAfterPoint(Point p){
-            Queue<Vertex> SearchQueue = new Queue<Vertex>();
+        // Given a point, returns all of the triangles of this.triangles
+        // which contain the point in their circumsphere
+        private HashSet<Vertex> FindBadTriangles(Point p){
             HashSet<Vertex> invalidVertices = new HashSet<Vertex>();
-            foreach (Vertex v in triangles)
+            foreach (Vertex triangle in triangles)
             {
-                if (v.InCircumsphere(p))
+                if (triangle.InCircumsphere(p))
                 {
-                    SearchQueue.Enqueue(v);
-                    invalidVertices.Add(v);
+                    invalidVertices.Add(triangle);
                 }
             }
-            //while(SearchQueue.Count > 0){
-            //    Vertex node = SearchQueue.Dequeue();
-            //    // TODO: Check if its already destined to be deleted?
-            //    foreach(Vertex neighbor in node.neighbors){
-            //        if (neighbor == Vertex.nullVertex){
-            //            continue;
-            //        }
-            //        else if (neighbor.InCircumsphere(p) && invalidVertices.Contains(neighbor))
-            //        {
-            //            invalidVertices.Add(neighbor);
-            //            SearchQueue.Enqueue(neighbor);
-            //        }
-            //    }
-            //}
-
             return invalidVertices;
-
         }
 
+        // Given a list of several triangles, calculate the outer
+        // border of those triangles for retriangulation.
         private List<Edge> Boundary(HashSet<Vertex> vertices){
-
             HashSet<Edge> boundary = new HashSet<Edge>();
             
             foreach(Vertex invalidVertex in vertices){
                 for (int i = 0; i < 3; i++){
                     Edge e = invalidVertex.GetEdge(i);
+                    // If edge is NOT shared with any other
+                    // triangle, then it is an outer border.
                     if (!vertices.Contains(e.opposite))
                     {
                         boundary.Add(e);
@@ -111,15 +98,24 @@ namespace VoronoiBowyerWatson
             return new List<Edge>(boundary);
         }
 
-        private List<Vertex> Retriangulate(Point p, List<Edge> boundary)
+        // Given a point p and a list of boundary edges around it,
+        // triangulate from edge points to point itself
+        private List<Vertex> GetNewTriangulation(Point p, List<Edge> boundary)
         {
+            // First, draw triangles between edge points and the new point:
             List<Vertex> newVertices = new List<Vertex>();
             foreach(Edge e in boundary){
                 List<Point> points = new List<Point> { p, e.a, e.b };
                 List<Vertex> neighbors = new List<Vertex> { Vertex.nullVertex, e.opposite, Vertex.nullVertex };
-                newVertices.Add(new Vertex(points, neighbors));
+                Vertex newTriangle = new Vertex(points, neighbors);
+                newVertices.Add(newTriangle);
+                // Change neighbor's value on opposite side of the edge to point here:
+                if (e.opposite != null) {
+                    e.opposite.UpdateValueOfNeighborWithEdge(e, newTriangle);
+                }
             }
 
+            // Only works if the triangles are in a certain order: (??)
             int numTris = newVertices.Count;
             for (int i = 0; i < numTris; i++){
                 newVertices[i].neighbors[0] = newVertices[(numTris + i - 1) % numTris];

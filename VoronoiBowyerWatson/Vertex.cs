@@ -35,6 +35,9 @@ namespace VoronoiBowyerWatson
                 return 0;
             }
         }
+        public bool PointEqual (Point p) {
+            return (this.x == p.x && this.y == p.y);
+        }
     }
 
     public struct Edge
@@ -67,6 +70,9 @@ namespace VoronoiBowyerWatson
             }
         }
 
+        public bool EdgeEqual (Edge e) {
+            return (a.PointEqual(e.a) && b.PointEqual(e.b));
+        }
     }
 
     public class Vertex
@@ -115,6 +121,7 @@ namespace VoronoiBowyerWatson
         public List<Point> SharedPoints(Vertex a){
             return SharedPoints(this, a);
         }
+
         public Edge GetEdge(int i){
 
             Point a = points[i % 3];
@@ -122,6 +129,23 @@ namespace VoronoiBowyerWatson
             Vertex op = neighbors[i % 3];
 
             return new Edge(a, b, op);
+        }
+
+        // Search for a neighbor that has an edge "e". Update its value
+        // to the given parameter.
+        public void UpdateValueOfNeighborWithEdge (Edge e, Vertex update) {
+            for (int i = 0; i < neighbors.Count; i++){
+                for (int j = 0; j < 3; j++) {
+                    if (neighbors[i] != null) {
+                        Edge curEdge = neighbors[i].GetEdge(j);
+                        if (curEdge.EdgeEqual(e))
+                        {
+                            neighbors[i] = update;
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 }
