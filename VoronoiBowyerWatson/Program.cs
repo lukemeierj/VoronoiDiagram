@@ -1,17 +1,29 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Diagnostics;
+using VoronoiAlgorithms.Models;
 
-namespace VoronoiBowyerWatson
+namespace VoronoiAlgorithms
 {
     class Program
     {
-        static int numRuns = 10;
-        static int range = 500;
-        static int[] numPts = { 10 };
+        static readonly int numRuns = 10;
+        public enum TestMode { BOWYER_WATSON, BRUTE_FORCE_SCALE_PTS, BRUTE_FORCE_SCALE_RES };
 
+        // For diagram BMP generation:
+        static readonly int numPointsForPic = 20;
+        static readonly int rangeForPic = 1000;
+
+        // For normal point scaling:
+        static readonly int rangeMultiplier = 5;
+        static readonly int[] numPts = { 10, 100, 1000, 5000 };
+
+        // Variables for brute force testing resolution:
+        static readonly int[] ranges = { 100, 500, 1000, 2000, 4000, 10000 };
+        static readonly int numPtsForRange = 20;
+
+        // A simple CLI program that lets the user test and generate diagrams:
         static void Main(string[] args)
         {
             while (true) {
@@ -23,188 +35,112 @@ namespace VoronoiBowyerWatson
                     continue;
                 }
 
-                if (res == 1)
+                switch (res)
                 {
-                    Console.WriteLine("Test Results for BOWYER/WATSON:\n");
-                    Console.WriteLine("Trial:\t\tPoints:\t\tRange:\t\tTime:\t\t");
-
-                    foreach (int numPt in numPts)
-                    {
-                        long totalTime = 0;
-                        for (int i = 0; i < numRuns; i++)
-                        {
-                            totalTime += RunTests(i, numPt, range);
-                        }
-                        long avg = totalTime / numRuns;
-                        Console.WriteLine("Average completion time: " + avg + "\n");
-                    }
+                    case 1:
+                        RunAllTests();
+                        break;
+                    case 0:
+                        RenderSameDiagram();
+                        break;
+                    case -1:
+                        Environment.Exit(1);
+                        break;
                 }
-                else if (res == 0)
-                {
-                    List<Point> points = new List<Point>();
 
-                    points.Add(new Point(5, 5));
-                    points.Add(new Point(5, 200));
-                    points.Add(new Point(400, 400));
-                    points.Add(new Point(20, 15));
-                    points.Add(new Point(100, 350));
-                    points.Add(new Point(25, 350));
-                    points.Add(new Point(300, 10));
-
-                    Triangulation tri = new Triangulation(points);
-                    tri.Triangulate();
-                    DrawDiagramFromTriangulation(tri.WithoutSupertriangle(), "bowyer_output.bmp");
-                }
-                else if (res == -1)
-                {
-                    Environment.Exit(1);
-                } else {
-                    continue;
-                }
+                continue;
             }
         }
 
-        // Returns the number of milliseconds it took to generate the diagram:
-        public static long RunTests(int trial, int numPoints, int max)
+        // Renders a diagram based off of random points.
+        // Uses same points with both methods.
+        public static void RenderSameDiagram()
         {
-            Stopwatch timer = new Stopwatch();
-            Random rand = new Random();
+            List<Point> points = Point.GetRandomPoints(numPointsForPic, rangeForPic);
 
-            List<Point> sites = new List<Point>();
-            for (int i = 0; i < numPoints; i++)
+            DelaunayTriangulator tri = new DelaunayTriangulator(points);
+            VoronoiRenderer.DrawDiagram(tri.GenerateVoronoi(), "bowyer_output.bmp");
+
+            BruteForceVoronoi voro = new BruteForceVoronoi(points);
+            voro.GenerateVoronoi();
+            VoronoiRenderer.DrawDiagram(voro, "brute_force_output.bmp");
+        }
+
+        // Runs test for each mode:
+        static void RunAllTests () {
+            RunAllTestsForMode(TestMode.BOWYER_WATSON);
+            RunAllTestsForMode(TestMode.BRUTE_FORCE_SCALE_RES);
+            RunAllTestsForMode(TestMode.BRUTE_FORCE_SCALE_PTS);
+        }
+
+        // Runs the test suite for a given test mode:
+        static void RunAllTestsForMode (TestMode t) {
+            switch (t)
             {
-                int a = rand.Next(max);
-                int b = rand.Next(max);
-                sites.Add(new Point(a, b));
+                case TestMode.BOWYER_WATSON:
+                    Console.WriteLine("Test Results for BOWYER/WATSON:\n");
+                    break;
+                case TestMode.BRUTE_FORCE_SCALE_RES:
+                    Console.WriteLine("Test Results for BRUTE FORCE (scaling width/height):\n");
+                    break;
+                case TestMode.BRUTE_FORCE_SCALE_PTS:
+                    Console.WriteLine("Test Results for BRUTE FORCE (scaling num points):\n");
+                    break;
             }
 
-            timer.Start();
+            Console.WriteLine("Trial:\t\tPoints:\t\tRange:\t\tTime:\t\t");
 
-            Triangulation generator = new Triangulation(sites);
-            generator.Triangulate();
+            if (t == TestMode.BRUTE_FORCE_SCALE_RES) {
+                foreach (int r in ranges) {
+                    long totalTime = 0;
+                    for (int i = 0; i < numRuns; i++)
+                    {
+                        totalTime += RunTests(i, numPtsForRange, r, t);
+                    }
+                    long avg = totalTime / numRuns;
+                    Console.WriteLine("Average completion time: " + avg + "\n");
 
-            timer.Stop();
-            
+                }
+            } else {
+                foreach (int numPt in numPts)
+                {
+                    long totalTime = 0;
+                    for (int i = 0; i < numRuns; i++)
+                    {
+                        // The range of points is the current numbef or points
+                        // times the range multipler. e.g. 10 points -> 50 range
+                        totalTime += RunTests(i, numPt, numPt * rangeMultiplier, t);
+                    }
+                    long avg = totalTime / numRuns;
+                    Console.WriteLine("Average completion time: " + avg + "\n");
+                }
+
+            }
+        }
+
+        // Runs a specific Voronoi Generation test and returns the time it took
+        // to complete.
+        static long RunTests(int trial, int numPoints, int max, TestMode t)
+        {
+            Stopwatch timer = new Stopwatch();
+            List<Point> sites = Point.GetRandomPoints(numPoints, max);
+
+            if (t == TestMode.BOWYER_WATSON)
+            {
+                timer.Start();
+                DelaunayTriangulator generator = new DelaunayTriangulator(sites);
+                generator.GenerateVoronoi();
+                timer.Stop();
+            } else {
+                timer.Start();
+                BruteForceVoronoi generator = new BruteForceVoronoi(sites);
+                generator.GenerateVoronoi();
+                timer.Stop();
+            }
+
             long elapsed = timer.ElapsedMilliseconds;
             Console.WriteLine(trial + "\t\t" + numPoints + "\t\t" + max + "\t\t" + elapsed);
             return elapsed;
-
         }
-
-        public static void DrawDiagramFromTriangulation (Triangulation tri, string filename)
-        {
-            // Initialize surface:
-            Bitmap image = new Bitmap(tri.width, tri.height);
-            Graphics g = Graphics.FromImage(image);
-            g.Clear(Color.White);
-
-            // Style for site centers:
-            SolidBrush pointBrush = new SolidBrush(Color.Black);
-            int pointRadius = 4;
-
-            // Style for lines:
-            Pen linePen = new Pen(Brushes.SlateGray)
-            {
-                Width = 1.0F
-            };
-
-
-            foreach (Vertex vertex in tri.triangles) {
-                foreach (Vertex neighbor in vertex.neighbors) {
-                    if (neighbor != null)
-                    {
-                        Point a = vertex.center;
-                        Point b = neighbor.center;
-
-                        System.Drawing.Point aWithOffset = new System.Drawing.Point((int)Math.Floor(a.x) - tri.xOffset, (int)Math.Floor(a.y) - tri.yOffset);
-                        System.Drawing.Point bWithOffset = new System.Drawing.Point((int)Math.Floor(b.x) - tri.xOffset, (int)Math.Floor(b.y) - tri.yOffset);
-
-                        g.DrawLine(linePen, aWithOffset, bWithOffset);
-                    }
-                }
-                foreach (Point point in vertex.points) {
-                    int xCoord = (int)Math.Floor(point.x) - pointRadius - tri.xOffset;
-                    int yCoord = (int)Math.Floor(point.y) - pointRadius - tri.yOffset;
-                    g.FillEllipse(pointBrush, xCoord, yCoord, pointRadius * 2, pointRadius * 2);
-                }
-            }
-            image.Save(filename);
-
-            linePen.Dispose();
-            pointBrush.Dispose();
-        }
-
-        public static void DrawTriangulation(Triangulation tri, string filename)
-        {
-            // Initialize surface:
-            Bitmap image = new Bitmap(tri.width, tri.height);
-            Graphics g = Graphics.FromImage(image);
-            g.Clear(Color.White);
-          
-            // Style for site centers:
-            SolidBrush pointBrush = new SolidBrush(Color.Black);
-            SolidBrush centerBrush = new SolidBrush(Color.Red);
-            int pointRadius = 4;
-
-            // Style for lines:
-            Pen linePen = new Pen(Brushes.SlateGray)
-            {
-                Width = 1.0F
-            };
-
-            Pen circlePen = new Pen(Brushes.GreenYellow)
-            {
-                Width = 0.75F
-            };
-
-
-            foreach (Vertex vertex in tri.triangles)
-            {
-                System.Drawing.Point[] drawPoints = new System.Drawing.Point[4];
-
-                for (int i = 0; i < vertex.points.Count; i++)
-                {
-                    Font f = new Font("Arial", 10);
-                    Point p = vertex.points[i];
-                    System.Drawing.Point pWithOffset = new System.Drawing.Point((int)Math.Floor(p.x) - tri.xOffset, (int)Math.Floor(p.y) - tri.yOffset);
-                    g.DrawString(p.ToString(), f, centerBrush, pWithOffset);
-                    drawPoints[i] = pWithOffset;
-                }
-                drawPoints[3] = drawPoints[0];
-
-
-                g.DrawLines(linePen, drawPoints);
-
-
-                Point point = vertex.center;
-                int xCoord = (int)Math.Floor(point.x) - pointRadius - tri.xOffset;
-                int yCoord = (int)Math.Floor(point.y) - pointRadius - tri.yOffset;
-                g.FillEllipse(centerBrush, xCoord, yCoord, pointRadius * 2, pointRadius * 2);
-
-
-
-                DrawCircle(circlePen, point, vertex.radius, g, tri.xOffset, tri.yOffset);
-            }
-
-            foreach(Point point in tri.allPoints){
-                int xCoord = (int)Math.Floor(point.x) - pointRadius - tri.xOffset;
-                int yCoord = (int)Math.Floor(point.y) - pointRadius - tri.yOffset;
-                g.FillEllipse(pointBrush, xCoord, yCoord, pointRadius * 2, pointRadius * 2);
-            }
-            image.Save(filename);
-
-            linePen.Dispose();
-            pointBrush.Dispose();
-            centerBrush.Dispose();
-            circlePen.Dispose();
-        }
-        public static void DrawCircle(Pen pen, Point center, double radius, Graphics g, double xOffset, double yOffset){
-            int minX = (int)(Math.Floor(center.x) - radius - xOffset);
-            int minY = (int)(Math.Floor(center.y) - radius - yOffset);
-            Rectangle rect = new Rectangle(minX, minY, (int)radius*2, (int)radius*2);
-            g.DrawEllipse(pen, rect);
-
-        }
-    
     }
 }

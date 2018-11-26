@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using VoronoiAlgorithms.Models;
 
-namespace VoronoiBowyerWatson
+namespace VoronoiAlgorithms
 {
-    public class Triangulation
+    public class DelaunayTriangulator
     {
         // For image generation later on:
         public int height;
@@ -17,14 +18,14 @@ namespace VoronoiBowyerWatson
         public List<Vertex> triangles = new List<Vertex>();
         public List<Point> allPoints;
 
-        public Triangulation(List<Point> points)
+        public DelaunayTriangulator(List<Point> points)
         {
             allPoints = points;
             allPoints.Sort(); // various places says this improves efficiency 
             AddSuperTriangle(points);
         }
 
-        public Triangulation(List<Vertex> triangles, List<Point> allPoints, int height, int width, int xOffset, int yOffset, double padding){
+        public DelaunayTriangulator(List<Vertex> triangles, List<Point> allPoints, int height, int width, int xOffset, int yOffset, double padding){
             this.triangles = triangles;
             this.allPoints = allPoints;
             this.height = height;
@@ -189,26 +190,41 @@ namespace VoronoiBowyerWatson
             return newVertices;
          }
 
-        public List<Vertex> Triangulate(){
+        public List<Vertex> Triangulate () {
             foreach(Point p in allPoints){
                 AddPoint(p);
             }
             return triangles;
         }
 
-        private void RenderVoronoi(string filename)
-        {
-            Program.DrawDiagramFromTriangulation(this, filename);
-        }
-
-        private void RenderDelaunay(string filename)
-        {
-            Program.DrawTriangulation(this, filename);
-        }
-
-        public Triangulation WithoutSupertriangle(){
+        public DelaunayTriangulator WithoutSupertriangle () {
             List<Vertex> vertices = new List<Vertex>(triangles.Where(triangle => !triangle.points.Intersect(superTriangle).Any()));
-            return new Triangulation(vertices, allPoints, height, width, xOffset, yOffset, padding);
+            return new DelaunayTriangulator(vertices, allPoints, height, width, xOffset, yOffset, padding);
+        }
+
+        public VoronoiDiagram GenerateVoronoi () {
+            Triangulate();
+            return GetDiagram(WithoutSupertriangle());
+        }
+    
+        private VoronoiDiagram GetDiagram(DelaunayTriangulator tri) {
+            VoronoiDiagram v = new VoronoiDiagram();
+            v.height = tri.height;
+            v.width = tri.width;
+            v.xOffset = tri.xOffset;
+            v.yOffset = tri.yOffset;
+
+            foreach (Vertex vertex in tri.triangles) {
+                foreach (Vertex neighbor in vertex.neighbors) {
+                    if (neighbor != null) {
+                        Point a = vertex.center;
+                        Point b = neighbor.center;
+                        v.edges.Add(new Edge(a, b));
+                    }
+                }
+                v.sites.UnionWith(vertex.points);
+            }
+            return v;
         }
     }
 }
