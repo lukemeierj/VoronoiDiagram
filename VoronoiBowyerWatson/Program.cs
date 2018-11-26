@@ -14,34 +14,54 @@ namespace VoronoiBowyerWatson
 
         static void Main(string[] args)
         {
+            while (true) {
+                Console.WriteLine("Enter 1 to run tests or 0 to generate a diagram. -1 to exit.");
+                int res = -1;
+                try {
+                    res = Convert.ToInt32(Console.ReadLine());
+                } catch {
+                    continue;
+                }
 
-            List<Point> points = new List<Point>();
-           
-            points.Add(new Point(5, 5));
-            points.Add(new Point(5, 200));
-            points.Add(new Point(400, 400));
-            points.Add(new Point(20, 15));
-            points.Add(new Point(100, 350));
-            points.Add(new Point(25, 350));
-            points.Add(new Point(300, 10));
+                if (res == 1)
+                {
+                    Console.WriteLine("Test Results for BOWYER/WATSON:\n");
+                    Console.WriteLine("Trial:\t\tPoints:\t\tRange:\t\tTime:\t\t");
 
-            Triangulation tri = new Triangulation(points);
-            tri.Triangulate();
+                    foreach (int numPt in numPts)
+                    {
+                        long totalTime = 0;
+                        for (int i = 0; i < numRuns; i++)
+                        {
+                            totalTime += RunTests(i, numPt, range);
+                        }
+                        long avg = totalTime / numRuns;
+                        Console.WriteLine("Average completion time: " + avg + "\n");
+                    }
+                }
+                else if (res == 0)
+                {
+                    List<Point> points = new List<Point>();
 
-            // FOR TESTING:
-            //Console.WriteLine("Test Results for BOWYER/WATSON:\n");
-            //Console.WriteLine("Trial:\t\tPoints:\t\tRange:\t\tTime:\t\t");
+                    points.Add(new Point(5, 5));
+                    points.Add(new Point(5, 200));
+                    points.Add(new Point(400, 400));
+                    points.Add(new Point(20, 15));
+                    points.Add(new Point(100, 350));
+                    points.Add(new Point(25, 350));
+                    points.Add(new Point(300, 10));
 
-            //foreach (int numPt in numPts)
-            //{
-            //    long totalTime = 0;
-            //    for (int i = 0; i < numRuns; i++)
-            //    {
-            //        totalTime += RunTests(i, numPt, range);
-            //    }
-            //    long avg = totalTime / numRuns;
-            //    Console.WriteLine("Average completion time: " + avg + "\n");
-            //}
+                    Triangulation tri = new Triangulation(points);
+                    tri.Triangulate();
+                    DrawDiagramFromTriangulation(tri.WithoutSupertriangle(), "bowyer_output.bmp");
+                }
+                else if (res == -1)
+                {
+                    Environment.Exit(1);
+                } else {
+                    continue;
+                }
+            }
         }
 
         // Returns the number of milliseconds it took to generate the diagram:
@@ -166,7 +186,7 @@ namespace VoronoiBowyerWatson
                 DrawCircle(circlePen, point, vertex.radius, g, tri.xOffset, tri.yOffset);
             }
 
-            foreach(Point point in tri.addedPoints){
+            foreach(Point point in tri.allPoints){
                 int xCoord = (int)Math.Floor(point.x) - pointRadius - tri.xOffset;
                 int yCoord = (int)Math.Floor(point.y) - pointRadius - tri.yOffset;
                 g.FillEllipse(pointBrush, xCoord, yCoord, pointRadius * 2, pointRadius * 2);

@@ -29,19 +29,55 @@ namespace VoronoiBruteForce
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Test Results for BRUTE FORCE:\n");
-            Console.WriteLine("Trial:\t\tPoints:\t\tRange:\t\tTime:\t\t");
-
-            foreach (int numPt in numPts) {
-                long totalTime = 0;
-                for (int i = 0; i < numRuns; i++)
+            while (true)
+            {
+                Console.WriteLine("Enter 1 to run tests or 0 to generate a diagram. -1 to exit.");
+                int res = -1;
+                try
                 {
-                    totalTime += RunTests(i, numPt, range);
+                    res = Convert.ToInt32(Console.ReadLine());
                 }
-                long avg = totalTime / numRuns;
-                Console.WriteLine("Average completion time: " + avg + "\n");
-            }
+                catch
+                {
+                    continue;
+                }
+                if (res == 1)
+                {
+                    Console.WriteLine("Test Results for BRUTE FORCE:\n");
+                    Console.WriteLine("Trial:\t\tPoints:\t\tRange:\t\tTime:\t\t");
 
+                    foreach (int numPt in numPts)
+                    {
+                        long totalTime = 0;
+                        for (int i = 0; i < numRuns; i++)
+                        {
+                            totalTime += RunTests(i, numPt, range);
+                        }
+                        long avg = totalTime / numRuns;
+                        Console.WriteLine("Average completion time: " + avg + "\n");
+                    }
+                }
+                else if (res == 0)
+                {
+                    List<Point> points = new List<Point>();
+
+                    points.Add(new Point(5, 5));
+                    points.Add(new Point(5, 200));
+                    points.Add(new Point(400, 400));
+                    points.Add(new Point(20, 15));
+                    points.Add(new Point(100, 350));
+                    points.Add(new Point(25, 350));
+                    points.Add(new Point(300, 10));
+
+                    BruteForceCalculation generator = new BruteForceCalculation(points);
+                    Color[,] result = generator.CalculateVoronoiDiagram();
+                    SaveAsImage(result, points, generator.width, generator.height, "brute_force_output.bmp");
+                } else if (res == -1) {
+                    Environment.Exit(1);
+                } else {
+                    continue;
+                }
+            }
         }
 
         // Returns the number of milliseconds it took to generate the diagram:
@@ -63,14 +99,13 @@ namespace VoronoiBruteForce
             Color[,] result = generator.CalculateVoronoiDiagram();
             timer.Stop();
 
-            //SaveAsImage(result, sites, generator.width, generator.height);
 
             long elapsed = timer.ElapsedMilliseconds;
             Console.WriteLine(trial + "\t\t" + numPoints + "\t\t" + max + "\t\t" + elapsed);
             return elapsed;
         }
 
-        public static void SaveAsImage (Color[,] voronoi, List<Point> sites, int width, int height) {
+        public static void SaveAsImage (Color[,] voronoi, List<Point> sites, int width, int height, string filename) {
             Bitmap image = new Bitmap(width, height);
 
             for (int row = 0; row < height; row++) {
@@ -87,7 +122,7 @@ namespace VoronoiBruteForce
             {
                 g.FillEllipse(whiteBrush, site.x - circleRadius, site.y - circleRadius, circleRadius * 2, circleRadius * 2);
             }
-            image.Save("img_brute_force.bmp");
+            image.Save(filename);
             whiteBrush.Dispose();
         }
     }
