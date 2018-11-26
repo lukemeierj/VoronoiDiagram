@@ -3,9 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2043
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoronoiBruteForce", "VoronoiBruteForce\VoronoiBruteForce.csproj", "{AAC31B20-82A1-4EFB-AF5A-C37D0988266F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoronoiBowyerWatson", "VoronoiBowyerWatson\VoronoiBowyerWatson.csproj", "{F15E9EC5-E5BC-4CCF-B788-EBACB944D7C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoronoiAlgorithms", "VoronoiBowyerWatson\VoronoiAlgorithms.csproj", "{F15E9EC5-E5BC-4CCF-B788-EBACB944D7C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,10 +11,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AAC31B20-82A1-4EFB-AF5A-C37D0988266F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AAC31B20-82A1-4EFB-AF5A-C37D0988266F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AAC31B20-82A1-4EFB-AF5A-C37D0988266F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AAC31B20-82A1-4EFB-AF5A-C37D0988266F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F15E9EC5-E5BC-4CCF-B788-EBACB944D7C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F15E9EC5-E5BC-4CCF-B788-EBACB944D7C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F15E9EC5-E5BC-4CCF-B788-EBACB944D7C3}.Release|Any CPU.ActiveCfg = Release|Any CPU

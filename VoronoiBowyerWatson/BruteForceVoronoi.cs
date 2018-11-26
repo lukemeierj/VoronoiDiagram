@@ -1,25 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Drawing;
+using VoronoiAlgorithms.Models;
 
-namespace VoronoiBruteForce
+namespace VoronoiAlgorithms
 {
-    public class BruteForceCalculation
+    public class BruteForceVoronoi
     {
-        List<Point> sites;
-        public int width { get; set; }
-        public int height { get; set; }
+        public List<Point> sites;
+        public int width;
+        public int height;
+        public System.Drawing.Color[,] output;
 
         // Initialize the calculator with sites. We find the width & height from the sites:
-        public BruteForceCalculation(List<Point> sites)
+        public BruteForceVoronoi(List<Point> sites)
         {
             this.sites = sites;
 
-            int maxY = sites.Max(point => point.y);
-            int minY = sites.Min(point => point.y);
-            int maxX = sites.Max(point => point.x);
-            int minX = sites.Min(point => point.x);
+            int maxY = (int)sites.Max(point => point.y);
+            int minY = (int)sites.Min(point => point.y);
+            int maxX = (int)sites.Max(point => point.x);
+            int minX = (int)sites.Min(point => point.x);
 
             this.width = maxX - minX;
             this.height = maxY - minY;
@@ -27,8 +28,8 @@ namespace VoronoiBruteForce
 
         // Some information was gathered from this StackOverflow answer:
         // https://stackoverflow.com/a/85484
-        public Color[,] CalculateVoronoiDiagram() {
-            Color[,] output = new Color[width, height];
+        public void GenerateVoronoi() {
+            output = new System.Drawing.Color[width, height];
 
             // row goes through each row from top to bottom
             for (int row = 0; row < height; row++) {
@@ -54,7 +55,6 @@ namespace VoronoiBruteForce
                     output[col, row] = closestSite.color;
                 }
             }
-            return output;
         }
 
         public static double DistanceBetweenPoints (Point p1, Point p2) {
