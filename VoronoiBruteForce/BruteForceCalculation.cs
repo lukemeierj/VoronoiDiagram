@@ -7,16 +7,22 @@ namespace VoronoiBruteForce
 {
     public class BruteForceCalculation
     {
-        readonly List<Point> sites;
-        readonly int width;
-        readonly int height;
+        List<Point> sites;
+        public int width { get; set; }
+        public int height { get; set; }
 
-        // Note: we will go through the width/height from 0 up to (excluding) the value for width/height
-        public BruteForceCalculation(List<Point> sites, int width, int height)
+        // Initialize the calculator with sites. We find the width & height from the sites:
+        public BruteForceCalculation(List<Point> sites)
         {
             this.sites = sites;
-            this.width = width;
-            this.height = height;
+
+            int maxY = sites.Max(point => point.y);
+            int minY = sites.Min(point => point.y);
+            int maxX = sites.Max(point => point.x);
+            int minX = sites.Min(point => point.x);
+
+            this.width = maxX - minX;
+            this.height = maxY - minY;
         }
 
         // Some information was gathered from this StackOverflow answer:

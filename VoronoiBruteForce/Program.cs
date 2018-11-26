@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Diagnostics;
 
 namespace VoronoiBruteForce
 {
@@ -20,43 +21,44 @@ namespace VoronoiBruteForce
         }
     }
 
-    public struct Edge {
-        readonly Point start, end;
-        public Edge(Point start, Point end)
-        {
-            this.start = start;
-            this.end = end;
-        }
-    }
-
-    public struct Cell {
-        readonly Point site;
-        public List<Edge> boundary;
-        public Cell(Point site, List<Edge> boundary) {
-            this.site = site;
-            this.boundary = boundary;
-        }
-    }
-
     class Program
     {
+        static int numRuns = 10;
+
         static void Main(string[] args)
         {
-            Point A = new Point(5, 5, Color.Pink);
-            Point B = new Point(5, 200, Color.IndianRed);
-            Point C = new Point(400, 400, Color.DeepSkyBlue);
-            Point D = new Point(20, 15, Color.DarkBlue);
-            Point E = new Point(100, 350, Color.DarkRed);
-            Point F = new Point(25, 350, Color.LightSkyBlue);
-            Point G = new Point(300, 10, Color.Blue);
+            long totalTime = 0;
+            for (int i = 0; i < numRuns; i++) {
+                totalTime += RunTests(100, 2000);
+            }
+            long avg = totalTime / numRuns;
+            Console.WriteLine("Average completion time: " + avg);
+        }
 
-            int width = 500;
-            int height = 500;
-            List<Point> testSitesA = new List<Point>(){ A, B, C, D, E, F, G };
+        // Returns the number of milliseconds it took to generate the diagram:
+        public static long RunTests (int numPoints, int max) {
+            Stopwatch timer = new Stopwatch();
+            Random rand = new Random();
 
-            BruteForceCalculation algoTest1 = new BruteForceCalculation(testSitesA, width, height);
-            Color[,] res1 = algoTest1.CalculateVoronoiDiagram();
-            SaveAsImage(res1, testSitesA, width, height);
+            List<Point> sites = new List<Point>();
+            for (int i = 0; i < numPoints; i++) {
+                int a = rand.Next(max);
+                int b = rand.Next(max);
+                Color randomColor = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
+                sites.Add(new Point(a, b, randomColor));
+            }
+
+            timer.Start();
+
+            BruteForceCalculation generator = new BruteForceCalculation(sites);
+            Color[,] result = generator.CalculateVoronoiDiagram();
+            timer.Stop();
+
+            //SaveAsImage(result, sites, generator.width, generator.height);
+
+            long elapsed = timer.ElapsedMilliseconds;
+            Console.WriteLine("Results for " + numPoints + " points over the range (0, " + max + "): " + elapsed);
+            return elapsed;
         }
 
         public static void SaveAsImage (Color[,] voronoi, List<Point> sites, int width, int height) {
@@ -78,14 +80,6 @@ namespace VoronoiBruteForce
             }
             image.Save("img_brute_force.bmp");
             whiteBrush.Dispose();
-        }
-
-        public static void PrintResults(List<Cell> cells) {
-            if (cells != null) {
-                Console.WriteLine("There are " + cells.Count + " cells.");
-            } else {
-                Console.WriteLine("No results.");
-            }
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Diagnostics;
 
 namespace VoronoiBowyerWatson
 {
@@ -9,6 +10,7 @@ namespace VoronoiBowyerWatson
     {
         static void Main(string[] args)
         {
+
             List<Point> points = new List<Point>();
            
             points.Add(new Point(5, 5));
@@ -32,6 +34,36 @@ namespace VoronoiBowyerWatson
             Triangulation tri = new Triangulation(points);
             tri.Triangulate();
             Program.DrawDiagramFromTriangulation(tri.WithoutSupertriangle(), width, height, xOffset, yOffset, 50, "final.bmp");
+
+
+            RunTests(100, 2000);
+        }
+
+        // Returns the number of milliseconds it took to generate the diagram:
+        public static long RunTests(int numPoints, int max)
+        {
+            Stopwatch timer = new Stopwatch();
+            Random rand = new Random();
+
+            List<Point> sites = new List<Point>();
+            for (int i = 0; i < numPoints; i++)
+            {
+                int a = rand.Next(max);
+                int b = rand.Next(max);
+                sites.Add(new Point(a, b));
+            }
+
+            timer.Start();
+
+            Triangulation generator = new Triangulation(sites);
+            generator.Triangulate();
+
+            timer.Stop();
+            
+            long elapsed = timer.ElapsedMilliseconds;
+            Console.WriteLine("Results for " + numPoints + " points over the range (0, " + max + "): " + elapsed);
+            return elapsed;
+
         }
 
         public static void DrawDiagramFromTriangulation (Triangulation tri, int width, int height, int xOffset, int yOffset, int padding, string filename) {
