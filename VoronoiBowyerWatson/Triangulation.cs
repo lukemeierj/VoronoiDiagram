@@ -81,14 +81,53 @@ namespace VoronoiBowyerWatson
         // which contain the point in their circumsphere
         private HashSet<Vertex> FindBadTriangles(Point p){
             HashSet<Vertex> invalidVertices = new HashSet<Vertex>();
-            foreach (Vertex triangle in triangles)
-            {
-                if (triangle.InCircumsphere(p))
+            Queue<Vertex> search = new Queue<Vertex>();
+            search.Enqueue(GetEnclosedVertex(p));
+
+
+            while(search.Count > 0){
+                Vertex node = search.Dequeue();
+                if(node == Vertex.nullVertex){
+                    continue;
+                }
+                else if(node.InCircumsphere(p) && !invalidVertices.Contains(node))
                 {
-                    invalidVertices.Add(triangle);
+                    invalidVertices.Add(node);
+
+                    foreach (Vertex neighbor in node.neighbors)
+                    {
+                        search.Enqueue(neighbor);
+                    }
+                }
+                
+            }
+
+            return invalidVertices;
+        }
+
+        //http://graphics.zcu.cz/files/106_REP_2010_Soukal_Roman.pdf
+        private Vertex GetEnclosedVertex(Point p)
+        {
+            int index = (new Random()).Next(0, triangles.Count - 1);
+
+            Vertex tri = triangles[index];
+            bool found = false;
+
+            while (!found)
+            {
+                found = true;
+                for (int i = 0; i < 3; i++)
+                {
+                    if (tri.AcrossEdge(i, p) < 0)
+                    {
+                        tri = tri.neighbors[i];
+                        found = false;
+                        break;
+                    }
                 }
             }
-             return invalidVertices;
+
+            return tri;
         }
 
         // Given a list of several triangles, calculate the outer

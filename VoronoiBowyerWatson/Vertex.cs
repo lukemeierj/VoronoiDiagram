@@ -151,14 +151,16 @@ namespace VoronoiBowyerWatson
             return SharedPoints(this, a);
         }
 
+        public double AcrossEdge(int i, Point p){
+            Edge e = GetEdge(i);
+            return (p.x - e.a.x) * (e.b.y - e.a.y) - (p.y - e.a.y) * (e.b.x - e.a.x);
+        }
+
         public Edge GetEdge(int i){
             Point a = points[i % 3];
             Point b = points[(i + 1) % 3];
             Vertex op = neighbors[i % 3];
-            //int index = FindNeighborIndex(new Edge(a, b));
-            //if (index >= 0) {
-            //    op = neighbors[index];
-            //}
+
             return new Edge(a, b, op);
         }
 
