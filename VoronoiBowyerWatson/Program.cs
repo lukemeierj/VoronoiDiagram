@@ -10,9 +10,11 @@ namespace VoronoiBowyerWatson
         static void Main(string[] args)
         {
             List<Point> points = new List<Point>();
-            points.Add(new Point(5, 100));
+           
+            points.Add(new Point(5, 5));
+            points.Add(new Point(5, 200));
             points.Add(new Point(400, 400));
-            points.Add(new Point(100, 15));
+            points.Add(new Point(20, 15));
             points.Add(new Point(100, 350));
             points.Add(new Point(25, 350));
             points.Add(new Point(300, 10));
@@ -29,7 +31,7 @@ namespace VoronoiBowyerWatson
 
             Triangulation tri = new Triangulation(points);
             tri.Triangulate();
-            //DrawDiagramFromTriangulation(tri, width, height, xOffset, yOffset, "efficient_img");
+            Program.DrawDiagramFromTriangulation(tri.WithoutSupertriangle(), width, height, xOffset, yOffset, 50, "final.bmp");
         }
 
         public static void DrawDiagramFromTriangulation (Triangulation tri, int width, int height, int xOffset, int yOffset, int padding, string filename) {

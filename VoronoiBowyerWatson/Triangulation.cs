@@ -43,8 +43,6 @@ namespace VoronoiBowyerWatson
             triangles.Add(new Vertex(boundaries, neighbors));
 
             // Add supertriangle to triangulation:
-            allPoints.AddRange(boundaries);
-            addedPoints.AddRange(boundaries);
             superTriangle = boundaries;
         }
 
@@ -83,20 +81,34 @@ namespace VoronoiBowyerWatson
         // Given a list of several triangles, calculate the outer
         // border of those triangles for retriangulation.
         private List<Edge> Boundary(HashSet<Vertex> vertices){
-            HashSet<Edge> boundary = new HashSet<Edge>();
+            List<Edge> boundary = new List<Edge>();
+            Dictionary<Point, Edge> edges = new Dictionary<Point, Edge>();
             
             foreach(Vertex invalidVertex in vertices){
-                for (int i = 0; i < 3; i++){
-                    Edge e = invalidVertex.GetEdge(i);
+                for (int j = 0; j < 3; j++){
+                    Edge e = invalidVertex.GetEdge(j);
                     // If edge is NOT shared with any other
                     // triangle, then it is an outer border.
-                    if (!vertices.Contains(e.opposite))
+                    if (!vertices.Contains(e.opposite) && !edges.ContainsKey(e.a))
                     {
-                        boundary.Add(e);
+                        edges.Add(e.a, e);
                     }
                 }
             }
-            return new List<Edge>(boundary);
+            Edge next = edges[edges.Keys.First()];
+            int i = 0;
+            boundary.Add(next);
+            while(!boundary[0].a.Equals(boundary[boundary.Count -1].b)){
+                if(edges.ContainsKey(boundary[i].b)){
+                    next = edges[boundary[i].b];
+                    i++;
+                    boundary.Add(next);
+                }
+                else {
+                    throw new ArgumentException("No cycle of an opening.");
+                }
+            }
+            return boundary;
         }
 
         // Given a point p and a list of boundary edges around it,
@@ -113,7 +125,7 @@ namespace VoronoiBowyerWatson
                 // Change neighbor's value on opposite side of the edge to point here:
                 if (e.opposite != null) {
                     e.opposite.UpdateValueOfNeighborWithEdge(e, newTriangle);
-                }
+                } 
             }
 
             // Only works if the triangles are in a certain order: (??)
