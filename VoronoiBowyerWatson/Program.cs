@@ -87,7 +87,6 @@ namespace VoronoiBowyerWatson
             long elapsed = timer.ElapsedMilliseconds;
             Console.WriteLine(trial + "\t\t" + numPoints + "\t\t" + max + "\t\t" + elapsed);
             return elapsed;
-
         }
 
         public static void DrawDiagram (VoronoiDiagram v, string filename)
