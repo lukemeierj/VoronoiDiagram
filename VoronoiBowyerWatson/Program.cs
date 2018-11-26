@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Diagnostics;
 
 namespace VoronoiBowyerWatson
 {
@@ -9,27 +10,55 @@ namespace VoronoiBowyerWatson
     {
         static void Main(string[] args)
         {
-            List<Point> points = new List<Point>();
-            points.Add(new Point(5, 100));
-            points.Add(new Point(400, 400));
-            points.Add(new Point(100, 15));
-            points.Add(new Point(100, 350));
-            points.Add(new Point(25, 350));
-            points.Add(new Point(300, 10));
+            //List<Point> points = new List<Point>();
+            //points.Add(new Point(5, 100));
+            //points.Add(new Point(400, 400));
+            //points.Add(new Point(100, 15));
+            //points.Add(new Point(100, 350));
+            //points.Add(new Point(25, 350));
+            //points.Add(new Point(300, 10));
 
-            double maxY = points.Max(point => point.y);
-            double minY = points.Min(point => point.y);
-            double maxX = points.Max(point => point.x);
-            double minX = points.Min(point => point.x);
+            //double maxY = points.Max(point => point.y);
+            //double minY = points.Min(point => point.y);
+            //double maxX = points.Max(point => point.x);
+            //double minX = points.Min(point => point.x);
 
-            int height = (int)(maxY + Math.Abs(minY));
-            int width = (int)(maxX + Math.Abs(minX));
-            int xOffset = (int) Math.Abs(minX);
-            int yOffset = (int) Math.Abs(minY);
+            //int height = (int)(maxY + Math.Abs(minY));
+            //int width = (int)(maxX + Math.Abs(minX));
+            //int xOffset = (int) Math.Abs(minX);
+            //int yOffset = (int) Math.Abs(minY);
 
-            Triangulation tri = new Triangulation(points);
-            tri.Triangulate();
+            //Triangulation tri = new Triangulation(points);
+            //tri.Triangulate();
             //DrawDiagramFromTriangulation(tri, width, height, xOffset, yOffset, "efficient_img");
+
+            RunTests(100, 2000);
+        }
+
+        // Returns the number of milliseconds it took to generate the diagram:
+        public static long RunTests(int numPoints, int max)
+        {
+            Stopwatch timer = new Stopwatch();
+            Random rand = new Random();
+
+            List<Point> sites = new List<Point>();
+            for (int i = 0; i < numPoints; i++)
+            {
+                int a = rand.Next(max);
+                int b = rand.Next(max);
+                sites.Add(new Point(a, b));
+            }
+
+            timer.Start();
+
+            Triangulation generator = new Triangulation(sites);
+            generator.Triangulate();
+
+            timer.Stop();
+            
+            long elapsed = timer.ElapsedMilliseconds;
+            Console.WriteLine("Results for " + numPoints + " points over the range (0, " + max + "): " + elapsed);
+            return elapsed;
         }
 
         public static void DrawDiagramFromTriangulation (Triangulation tri, int width, int height, int xOffset, int yOffset, int padding, string filename) {

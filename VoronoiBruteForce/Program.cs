@@ -54,7 +54,7 @@ namespace VoronoiBruteForce
             Color[,] result = generator.CalculateVoronoiDiagram();
             timer.Stop();
 
-            SaveAsImage(result, sites, generator.width, generator.height);
+            //SaveAsImage(result, sites, generator.width, generator.height);
 
             long elapsed = timer.ElapsedMilliseconds;
             Console.WriteLine("Results for " + numPoints + " points over the range (0, " + max + "): " + elapsed);
