@@ -24,19 +24,28 @@ namespace VoronoiBruteForce
     class Program
     {
         static int numRuns = 10;
+        static int range = 500;
+        static int[] numPts = { 10, 100, 200 };
 
         static void Main(string[] args)
         {
-            long totalTime = 0;
-            for (int i = 0; i < numRuns; i++) {
-                totalTime += RunTests(100, 2000);
+            Console.WriteLine("Test Results for BRUTE FORCE:\n");
+            Console.WriteLine("Trial:\t\tPoints:\t\tRange:\t\tTime:\t\t");
+
+            foreach (int numPt in numPts) {
+                long totalTime = 0;
+                for (int i = 0; i < numRuns; i++)
+                {
+                    totalTime += RunTests(i, numPt, range);
+                }
+                long avg = totalTime / numRuns;
+                Console.WriteLine("Average completion time: " + avg + "\n");
             }
-            long avg = totalTime / numRuns;
-            Console.WriteLine("Average completion time: " + avg);
+
         }
 
         // Returns the number of milliseconds it took to generate the diagram:
-        public static long RunTests (int numPoints, int max) {
+        public static long RunTests (int trial, int numPoints, int max) {
             Stopwatch timer = new Stopwatch();
             Random rand = new Random();
 
@@ -57,7 +66,7 @@ namespace VoronoiBruteForce
             //SaveAsImage(result, sites, generator.width, generator.height);
 
             long elapsed = timer.ElapsedMilliseconds;
-            Console.WriteLine("Results for " + numPoints + " points over the range (0, " + max + "): " + elapsed);
+            Console.WriteLine(trial + "\t\t" + numPoints + "\t\t" + max + "\t\t" + elapsed);
             return elapsed;
         }
 

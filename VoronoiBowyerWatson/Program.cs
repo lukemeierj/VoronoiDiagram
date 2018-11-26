@@ -8,35 +8,41 @@ namespace VoronoiBowyerWatson
 {
     class Program
     {
+        static int numRuns = 10;
+        static int range = 500;
+        static int[] numPts = { 10 };
+
         static void Main(string[] args)
         {
-            //List<Point> points = new List<Point>();
-            //points.Add(new Point(5, 100));
-            //points.Add(new Point(400, 400));
-            //points.Add(new Point(100, 15));
-            //points.Add(new Point(100, 350));
-            //points.Add(new Point(25, 350));
-            //points.Add(new Point(300, 10));
+            List<Point> points = new List<Point>();
+            points.Add(new Point(5, 100));
+            points.Add(new Point(400, 400));
+            points.Add(new Point(100, 15));
+            points.Add(new Point(100, 350));
+            points.Add(new Point(25, 350));
+            points.Add(new Point(300, 10));
 
-            //double maxY = points.Max(point => point.y);
-            //double minY = points.Min(point => point.y);
-            //double maxX = points.Max(point => point.x);
-            //double minX = points.Min(point => point.x);
+            Triangulation tri = new Triangulation(points);
+            tri.Triangulate();
 
-            //int height = (int)(maxY + Math.Abs(minY));
-            //int width = (int)(maxX + Math.Abs(minX));
-            //int xOffset = (int) Math.Abs(minX);
-            //int yOffset = (int) Math.Abs(minY);
+            // FOR TESTING:
+            //Console.WriteLine("Test Results for BOWYER/WATSON:\n");
+            //Console.WriteLine("Trial:\t\tPoints:\t\tRange:\t\tTime:\t\t");
 
-            //Triangulation tri = new Triangulation(points);
-            //tri.Triangulate();
-            //DrawDiagramFromTriangulation(tri, width, height, xOffset, yOffset, "efficient_img");
-
-            RunTests(100, 2000);
+            //foreach (int numPt in numPts)
+            //{
+            //    long totalTime = 0;
+            //    for (int i = 0; i < numRuns; i++)
+            //    {
+            //        totalTime += RunTests(i, numPt, range);
+            //    }
+            //    long avg = totalTime / numRuns;
+            //    Console.WriteLine("Average completion time: " + avg + "\n");
+            //}
         }
 
         // Returns the number of milliseconds it took to generate the diagram:
-        public static long RunTests(int numPoints, int max)
+        public static long RunTests(int trial, int numPoints, int max)
         {
             Stopwatch timer = new Stopwatch();
             Random rand = new Random();
@@ -57,18 +63,14 @@ namespace VoronoiBowyerWatson
             timer.Stop();
             
             long elapsed = timer.ElapsedMilliseconds;
-            Console.WriteLine("Results for " + numPoints + " points over the range (0, " + max + "): " + elapsed);
+            Console.WriteLine(trial + "\t\t" + numPoints + "\t\t" + max + "\t\t" + elapsed);
             return elapsed;
         }
 
-        public static void DrawDiagramFromTriangulation (Triangulation tri, int width, int height, int xOffset, int yOffset, int padding, string filename) {
-            xOffset -= padding;
-            yOffset -= padding;
-            height += 2 * Math.Abs(padding);
-            width += 2 * Math.Abs(padding);
-
+        public static void DrawDiagramFromTriangulation (Triangulation tri, string filename)
+        {
             // Initialize surface:
-            Bitmap image = new Bitmap(width, height);
+            Bitmap image = new Bitmap(tri.width, tri.height);
             Graphics g = Graphics.FromImage(image);
             g.Clear(Color.White);
 
@@ -90,15 +92,15 @@ namespace VoronoiBowyerWatson
                         Point a = vertex.center;
                         Point b = neighbor.center;
 
-                        System.Drawing.Point aWithOffset = new System.Drawing.Point((int)Math.Floor(a.x) - xOffset, (int)Math.Floor(a.y) - yOffset);
-                        System.Drawing.Point bWithOffset = new System.Drawing.Point((int)Math.Floor(b.x) - xOffset, (int)Math.Floor(b.y) - yOffset);
+                        System.Drawing.Point aWithOffset = new System.Drawing.Point((int)Math.Floor(a.x) - tri.xOffset, (int)Math.Floor(a.y) - tri.yOffset);
+                        System.Drawing.Point bWithOffset = new System.Drawing.Point((int)Math.Floor(b.x) - tri.xOffset, (int)Math.Floor(b.y) - tri.yOffset);
 
                         g.DrawLine(linePen, aWithOffset, bWithOffset);
                     }
                 }
                 foreach (Point point in vertex.points) {
-                    int xCoord = (int)Math.Floor(point.x) - pointRadius - xOffset;
-                    int yCoord = (int)Math.Floor(point.y) - pointRadius - yOffset;
+                    int xCoord = (int)Math.Floor(point.x) - pointRadius - tri.xOffset;
+                    int yCoord = (int)Math.Floor(point.y) - pointRadius - tri.yOffset;
                     g.FillEllipse(pointBrush, xCoord, yCoord, pointRadius * 2, pointRadius * 2);
                 }
             }
@@ -108,15 +110,10 @@ namespace VoronoiBowyerWatson
             pointBrush.Dispose();
         }
 
-        public static void DrawTriangulation(Triangulation tri, int width, int height, int xOffset, int yOffset, int padding, string filename)
+        public static void DrawTriangulation(Triangulation tri, string filename)
         {
-            xOffset -= padding;
-            yOffset -= padding;
-            height += 2 * Math.Abs(padding);
-            width += 2 * Math.Abs(padding);
-
             // Initialize surface:
-            Bitmap image = new Bitmap(width, height);
+            Bitmap image = new Bitmap(tri.width, tri.height);
             Graphics g = Graphics.FromImage(image);
             g.Clear(Color.White);
           
@@ -145,7 +142,7 @@ namespace VoronoiBowyerWatson
                 {
                     Font f = new Font("Arial", 10);
                     Point p = vertex.points[i];
-                    System.Drawing.Point pWithOffset = new System.Drawing.Point((int)Math.Floor(p.x) - xOffset, (int)Math.Floor(p.y) - yOffset);
+                    System.Drawing.Point pWithOffset = new System.Drawing.Point((int)Math.Floor(p.x) - tri.xOffset, (int)Math.Floor(p.y) - tri.yOffset);
                     g.DrawString(p.ToString(), f, centerBrush, pWithOffset);
                     drawPoints[i] = pWithOffset;
                 }
@@ -156,18 +153,18 @@ namespace VoronoiBowyerWatson
 
 
                 Point point = vertex.center;
-                int xCoord = (int)Math.Floor(point.x) - pointRadius - xOffset;
-                int yCoord = (int)Math.Floor(point.y) - pointRadius - yOffset;
+                int xCoord = (int)Math.Floor(point.x) - pointRadius - tri.xOffset;
+                int yCoord = (int)Math.Floor(point.y) - pointRadius - tri.yOffset;
                 g.FillEllipse(centerBrush, xCoord, yCoord, pointRadius * 2, pointRadius * 2);
 
 
 
-                DrawCircle(circlePen, point, vertex.radius, g, xOffset, yOffset);
+                DrawCircle(circlePen, point, vertex.radius, g, tri.xOffset, tri.yOffset);
             }
 
             foreach(Point point in tri.addedPoints){
-                int xCoord = (int)Math.Floor(point.x) - pointRadius - xOffset;
-                int yCoord = (int)Math.Floor(point.y) - pointRadius - yOffset;
+                int xCoord = (int)Math.Floor(point.x) - pointRadius - tri.xOffset;
+                int yCoord = (int)Math.Floor(point.y) - pointRadius - tri.yOffset;
                 g.FillEllipse(pointBrush, xCoord, yCoord, pointRadius * 2, pointRadius * 2);
             }
             image.Save(filename);

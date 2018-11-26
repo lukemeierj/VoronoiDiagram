@@ -6,6 +6,13 @@ namespace VoronoiBowyerWatson
 {
     public class Triangulation
     {
+        // For image generation later on:
+        public int height;
+        public int width;
+        public int xOffset;
+        public int yOffset;
+        public double padding = 10;
+
         private List<Point> superTriangle = new List<Point>();
         public List<Vertex> triangles = new List<Vertex>();
         public List<Point> addedPoints { private set; get; } = new List<Point>(); 
@@ -26,12 +33,16 @@ namespace VoronoiBowyerWatson
 
         //Creates a triangle that covers the axis aligned bounding box
         private void AddSuperTriangle(List<Point> points){
-            double padding = 100;
 
             double maxY = points.Max(point => point.y);
             double minY = points.Min(point => point.y);
             double maxX = points.Max(point => point.x);
             double minX = points.Min(point => point.x);
+
+            height = (int)(maxY + Math.Abs(minY) + 2 * Math.Abs(padding));
+            width = (int)(maxX + Math.Abs(minX) + 2 * Math.Abs(padding);
+            xOffset = (int)Math.Abs(minX) - (int)padding;
+            yOffset = (int)Math.Abs(minY) - (int)padding;
 
             //Points to define a triangle that surrounds the axis aligned bounding box
             Point upperLeft = new Point(minX - padding, maxY + padding);
