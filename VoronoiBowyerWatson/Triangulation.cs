@@ -189,7 +189,7 @@ namespace VoronoiBowyerWatson
             return newVertices;
          }
 
-        public List<Vertex> Triangulate(){
+        public List<Vertex> Triangulate () {
             foreach(Point p in allPoints){
                 AddPoint(p);
             }
@@ -209,6 +209,25 @@ namespace VoronoiBowyerWatson
         public Triangulation WithoutSupertriangle(){
             List<Vertex> vertices = new List<Vertex>(triangles.Where(triangle => !triangle.points.Intersect(superTriangle).Any()));
             return new Triangulation(vertices, allPoints, height, width, xOffset, yOffset, padding);
+        }
+
+        public VoronoiDiagram GetDiagram() {
+            VoronoiDiagram v = new VoronoiDiagram();
+            v.height = this.height;
+            v.width = this.width;
+            v.xOffset = this.xOffset;
+            v.yOffset = this.yOffset;
+            
+            foreach (Vertex vertex in this.triangles) {
+                foreach (Vertex neighbor in vertex.neighbors) {
+                    if (neighbor != null) {
+                        Point a = vertex.center;
+                        Point b = neighbor.center;
+                        v.edges.Add(new Edge(a, b));
+                    }
+                }
+                v.sites.UnionWith(vertex.points)
+            }
         }
     }
 }

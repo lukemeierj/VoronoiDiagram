@@ -53,7 +53,7 @@ namespace VoronoiBowyerWatson
 
                     Triangulation tri = new Triangulation(points);
                     tri.Triangulate();
-                    DrawDiagramFromTriangulation(tri.WithoutSupertriangle(), "bowyer_output.bmp");
+                    DrawDiagram(tri.GetDiagram(), "bowyer_output.bmp");
                 }
                 else if (res == -1)
                 {
@@ -91,10 +91,10 @@ namespace VoronoiBowyerWatson
 
         }
 
-        public static void DrawDiagramFromTriangulation (Triangulation tri, string filename)
+        public static void DrawDiagram (VoronoiDiagram v, string filename)
         {
             // Initialize surface:
-            Bitmap image = new Bitmap(tri.width, tri.height);
+            Bitmap image = new Bitmap(v.width, v.height);
             Graphics g = Graphics.FromImage(image);
             g.Clear(Color.White);
 
@@ -109,24 +109,17 @@ namespace VoronoiBowyerWatson
             };
 
 
-            foreach (Vertex vertex in tri.triangles) {
-                foreach (Vertex neighbor in vertex.neighbors) {
-                    if (neighbor != null)
-                    {
-                        Point a = vertex.center;
-                        Point b = neighbor.center;
-
-                        System.Drawing.Point aWithOffset = new System.Drawing.Point((int)Math.Floor(a.x) - tri.xOffset, (int)Math.Floor(a.y) - tri.yOffset);
-                        System.Drawing.Point bWithOffset = new System.Drawing.Point((int)Math.Floor(b.x) - tri.xOffset, (int)Math.Floor(b.y) - tri.yOffset);
-
-                        g.DrawLine(linePen, aWithOffset, bWithOffset);
-                    }
-                }
-                foreach (Point point in vertex.points) {
-                    int xCoord = (int)Math.Floor(point.x) - pointRadius - tri.xOffset;
-                    int yCoord = (int)Math.Floor(point.y) - pointRadius - tri.yOffset;
-                    g.FillEllipse(pointBrush, xCoord, yCoord, pointRadius * 2, pointRadius * 2);
-                }
+            // Draw edges:
+            foreach (Edge e in v.edges) {
+                System.Drawing.Point aWithOffset = new System.Drawing.Point((int)Math.Floor(e.a.x) - v.xOffset, (int)Math.Floor(e.a.y) - v.yOffset);
+                System.Drawing.Point bWithOffset = new System.Drawing.Point((int)Math.Floor(e.b.x) - v.xOffset, (int)Math.Floor(e.b.y) - v.yOffset);
+                g.DrawLine(linePen, aWithOffset, bWithOffset);
+            }
+            // Draw site centers:
+            foreach (Point point in v.sites) {
+                int xCoord = (int)Math.Floor(point.x) - pointRadius - v.xOffset;
+                int yCoord = (int)Math.Floor(point.y) - pointRadius - v.yOffset;
+                g.FillEllipse(pointBrush, xCoord, yCoord, pointRadius * 2, pointRadius * 2);
             }
             image.Save(filename);
 
