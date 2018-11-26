@@ -6,21 +6,24 @@ using System.Linq;
 namespace VoronoiBowyerWatson
 {
 
-    public struct Point : IComparable<Point> {
+    public struct Point : IComparable<Point>, IEquatable<Point> {
         public double x;
         public double y;
         public Point(double x, double y){
             this.x = x;
             this.y = y;
         }
+
         public static double Distance(Point a, Point b)
         {
             return Math.Sqrt(Math.Pow(a.x - b.x, 2) + Math.Pow(a.y - b.y, 2));
         }
+
         public double Distance(Point a){
             return Distance(this, a);
         }
-        override public string ToString(){
+
+        override public string ToString() {
             return "(" + x + ", " + y + ")";
         }
 
@@ -35,26 +38,31 @@ namespace VoronoiBowyerWatson
                 return 0;
             }
         }
-        public bool PointEqual (Point p) {
-            return (this.x == p.x && this.y == p.y);
+
+        public bool Equals(Point other)
+        {
+            return (x == other.x && y == other.y);
         }
     }
 
-    public struct Edge
+    public struct Edge : IEquatable<Edge>
     {
-        public Point a;
-        public Point b;
+        public Point a { get; set; }
+        public Point b { get; set; }
         public List<Vertex> adjacentVertices { private set; get; }
+
         public Vertex opposite {
             get {
                 return adjacentVertices.Count > 0 ? adjacentVertices[0] : null;
             }
         }
+
         public Edge(Point a, Point b, List<Vertex> vertices){
             this.a = a;
             this.b = b;
             this.adjacentVertices = vertices;
         }
+
         public Edge(Point a, Point b, Vertex v)
         {
             this.a = a;
@@ -62,6 +70,7 @@ namespace VoronoiBowyerWatson
 
             adjacentVertices = new List<Vertex> { v };
         }
+
         public string EdgeString
         {
             get
@@ -70,8 +79,20 @@ namespace VoronoiBowyerWatson
             }
         }
 
-        public bool EdgeEqual (Edge e) {
-            return (a.PointEqual(e.a) && b.PointEqual(e.b));
+        public bool Equals(Edge other)
+        {
+            if (a.Equals(other.a) && b.Equals(other.b)) {
+                return true;
+            } else if (a.Equals(other.b) && b.Equals(other.a)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return a.GetHashCode() + b.GetHashCode();
         }
     }
 
@@ -138,7 +159,7 @@ namespace VoronoiBowyerWatson
                 for (int j = 0; j < 3; j++) {
                     if (neighbors[i] != null) {
                         Edge curEdge = neighbors[i].GetEdge(j);
-                        if (curEdge.EdgeEqual(e))
+                        if (curEdge.Equals(e))
                         {
                             neighbors[i] = update;
                             break;

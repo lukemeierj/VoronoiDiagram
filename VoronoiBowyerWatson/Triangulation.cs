@@ -43,6 +43,7 @@ namespace VoronoiBowyerWatson
             triangles.Add(new Vertex(boundaries, neighbors));
 
             // Add supertriangle to triangulation:
+            allPoints.AddRange(boundaries);
             addedPoints.AddRange(boundaries);
             superTriangle = boundaries;
         }
@@ -76,7 +77,7 @@ namespace VoronoiBowyerWatson
                     invalidVertices.Add(triangle);
                 }
             }
-            return invalidVertices;
+             return invalidVertices;
         }
 
         // Given a list of several triangles, calculate the outer
