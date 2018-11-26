@@ -52,8 +52,7 @@ namespace VoronoiBowyerWatson
                     points.Add(new Point(300, 10));
 
                     Triangulation tri = new Triangulation(points);
-                    tri.Triangulate();
-                    DrawDiagram(tri.GetDiagram(), "bowyer_output.bmp");
+                    DrawDiagram(tri.GenerateVoronoi(), "bowyer_output.bmp");
                 }
                 else if (res == -1)
                 {
@@ -81,7 +80,7 @@ namespace VoronoiBowyerWatson
             timer.Start();
 
             Triangulation generator = new Triangulation(sites);
-            generator.Triangulate();
+            generator.GenerateVoronoi();
 
             timer.Stop();
             

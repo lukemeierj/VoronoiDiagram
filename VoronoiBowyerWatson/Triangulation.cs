@@ -206,19 +206,24 @@ namespace VoronoiBowyerWatson
             Program.DrawTriangulation(this, filename);
         }
 
-        public Triangulation WithoutSupertriangle(){
+        public Triangulation WithoutSupertriangle () {
             List<Vertex> vertices = new List<Vertex>(triangles.Where(triangle => !triangle.points.Intersect(superTriangle).Any()));
             return new Triangulation(vertices, allPoints, height, width, xOffset, yOffset, padding);
         }
 
-        public VoronoiDiagram GetDiagram() {
+        public VoronoiDiagram GenerateVoronoi () {
+            Triangulate();
+            return GetDiagram(WithoutSupertriangle());
+        }
+    
+        private VoronoiDiagram GetDiagram(Triangulation tri) {
             VoronoiDiagram v = new VoronoiDiagram();
-            v.height = this.height;
-            v.width = this.width;
-            v.xOffset = this.xOffset;
-            v.yOffset = this.yOffset;
-            
-            foreach (Vertex vertex in this.triangles) {
+            v.height = tri.height;
+            v.width = tri.width;
+            v.xOffset = tri.xOffset;
+            v.yOffset = tri.yOffset;
+
+            foreach (Vertex vertex in tri.triangles) {
                 foreach (Vertex neighbor in vertex.neighbors) {
                     if (neighbor != null) {
                         Point a = vertex.center;
@@ -228,6 +233,7 @@ namespace VoronoiBowyerWatson
                 }
                 v.sites.UnionWith(vertex.points)
             }
+            return v;
         }
     }
 }
