@@ -14,10 +14,13 @@ namespace VoronoiBowyerWatson
 
         static void Main(string[] args)
         {
+
             List<Point> points = new List<Point>();
-            points.Add(new Point(5, 100));
+           
+            points.Add(new Point(5, 5));
+            points.Add(new Point(5, 200));
             points.Add(new Point(400, 400));
-            points.Add(new Point(100, 15));
+            points.Add(new Point(20, 15));
             points.Add(new Point(100, 350));
             points.Add(new Point(25, 350));
             points.Add(new Point(300, 10));
@@ -65,6 +68,7 @@ namespace VoronoiBowyerWatson
             long elapsed = timer.ElapsedMilliseconds;
             Console.WriteLine(trial + "\t\t" + numPoints + "\t\t" + max + "\t\t" + elapsed);
             return elapsed;
+
         }
 
         public static void DrawDiagramFromTriangulation (Triangulation tri, string filename)
