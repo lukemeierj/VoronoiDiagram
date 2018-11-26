@@ -196,16 +196,6 @@ namespace VoronoiBowyerWatson
             return triangles;
         }
 
-        private void RenderVoronoi(string filename)
-        {
-            Program.DrawDiagramFromTriangulation(this, filename);
-        }
-
-        private void RenderDelaunay(string filename)
-        {
-            Program.DrawTriangulation(this, filename);
-        }
-
         public Triangulation WithoutSupertriangle () {
             List<Vertex> vertices = new List<Vertex>(triangles.Where(triangle => !triangle.points.Intersect(superTriangle).Any()));
             return new Triangulation(vertices, allPoints, height, width, xOffset, yOffset, padding);
@@ -231,7 +221,7 @@ namespace VoronoiBowyerWatson
                         v.edges.Add(new Edge(a, b));
                     }
                 }
-                v.sites.UnionWith(vertex.points)
+                v.sites.UnionWith(vertex.points);
             }
             return v;
         }
