@@ -92,6 +92,8 @@ namespace VoronoiBowyerWatson
 
         public override int GetHashCode()
         {
+            // Ensures that a -> b and b -> a
+            // are considered duplicates by HashSet
             return a.GetHashCode() + b.GetHashCode();
         }
     }
