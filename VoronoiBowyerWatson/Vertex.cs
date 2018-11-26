@@ -71,6 +71,12 @@ namespace VoronoiBowyerWatson
             adjacentVertices = new List<Vertex> { v };
         }
 
+        public Edge(Point a, Point b) {
+            this.a = a;
+            this.b = b;
+            adjacentVertices = new List<Vertex>();
+        }
+
         public string EdgeString
         {
             get
@@ -146,28 +152,40 @@ namespace VoronoiBowyerWatson
         }
 
         public Edge GetEdge(int i){
-
             Point a = points[i % 3];
-            Point b = points[(i+1) % 3];
+            Point b = points[(i + 1) % 3];
             Vertex op = neighbors[i % 3];
-
+            //int index = FindNeighborIndex(new Edge(a, b));
+            //if (index >= 0) {
+            //    op = neighbors[index];
+            //}
             return new Edge(a, b, op);
+        }
+
+        public int FindNeighborIndex (Edge e) {
+            for (int i = 0; i < neighbors.Count; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    if (neighbors[i] != null)
+                    {
+                        Edge curEdge = neighbors[i].GetEdge(j);
+                        if (curEdge.Equals(e))
+                        {
+                            return i;
+                        }
+                    }
+                }
+            }
+            return -1;
         }
 
         // Search for a neighbor that has an edge "e". Update its value
         // to the given parameter.
         public void UpdateValueOfNeighborWithEdge (Edge e, Vertex update) {
-            for (int i = 0; i < neighbors.Count; i++){
-                for (int j = 0; j < 3; j++) {
-                    if (neighbors[i] != null) {
-                        Edge curEdge = neighbors[i].GetEdge(j);
-                        if (curEdge.Equals(e))
-                        {
-                            neighbors[i] = update;
-                            break;
-                        }
-                    }
-                }
+            int index = FindNeighborIndex(e);
+            if (index >= 0) {
+                neighbors[index] = update;
             }
         }
     }
