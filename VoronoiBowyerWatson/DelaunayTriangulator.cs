@@ -71,10 +71,10 @@ namespace VoronoiAlgorithms
             triangles = new List<Vertex>(triangles.Except(invalidTriangles));
 
             // Calculate the boundary edges of those triangles:
-            List<Edge> boundary = Boundary(invalidTriangles);
+            List<Edge> boundary = TriangulationBoundary(invalidTriangles);
 
             // Get new triangulation between the boundary point and the added point:
-            List<Vertex> newTriangles = GetNewTriangulation(p, boundary);
+            List<Vertex> newTriangles = TriangulateBoundary(p, boundary);
 
             // Save new triangles:
             triangles.AddRange(newTriangles);
@@ -135,7 +135,7 @@ namespace VoronoiAlgorithms
 
         // Given a list of several triangles, calculate the outer
         // border of those triangles for retriangulation.
-        private List<Edge> Boundary(HashSet<Vertex> vertices){
+        private List<Edge> TriangulationBoundary(HashSet<Vertex> vertices){
             List<Edge> boundary = new List<Edge>();
             Dictionary<Point, Edge> edges = new Dictionary<Point, Edge>();
             
@@ -168,7 +168,7 @@ namespace VoronoiAlgorithms
 
         // Given a point p and a list of boundary edges around it,
         // triangulate from edge points to point itself
-        private List<Vertex> GetNewTriangulation(Point p, List<Edge> boundary)
+        private List<Vertex> TriangulateBoundary(Point p, List<Edge> boundary)
         {
             // First, draw triangles between edge points and the new point:
             List<Vertex> newVertices = new List<Vertex>();
