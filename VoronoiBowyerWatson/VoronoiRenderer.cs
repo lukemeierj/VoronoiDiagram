@@ -79,7 +79,8 @@ namespace VoronoiAlgorithms
                         image.SetPixel(col, row, Color.White);
                     }
                     else {
-                        image.SetPixel(col, row, diagram.output[col - config.xPadding, row - config.yPadding]);
+                        ushort pointIndex = diagram.output[col - config.xPadding, row - config.yPadding];
+                        image.SetPixel(col, row, diagram.sites[pointIndex].color);
                     }
 
                 }
@@ -128,7 +129,7 @@ namespace VoronoiAlgorithms
                 System.Drawing.Point[] drawPoints = new System.Drawing.Point[4];
 
                 for (int i = 0; i < vertex.points.Count; i++)
-                {
+                { 
                     Models.Point p = vertex.points[i];
                     System.Drawing.Point pWithOffset = TransposePoint(p, config);
                     g.DrawString(p.ToString(), font, centerBrush, pWithOffset);

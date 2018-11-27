@@ -14,7 +14,7 @@ namespace VoronoiAlgorithms
         private int padding = 20;
         private int xOffset;
         private int yOffset;
-        public System.Drawing.Color[,] output;
+        public ushort[,] output;
 
         // Initialize the calculator with sites. We find the width & height from the sites:
         public BruteForceVoronoi(List<Point> sites)
@@ -37,7 +37,7 @@ namespace VoronoiAlgorithms
         // https://stackoverflow.com/a/85484
         public void GenerateVoronoi()
         {
-            output = new System.Drawing.Color[width, height];
+            output = new ushort[width, height];
 
             // row goes through each row from top to bottom
             for (int row = 0; row < height; row++)
@@ -50,21 +50,22 @@ namespace VoronoiAlgorithms
                     Point curPoint = new Point(col + xOffset, row + yOffset);
 
                     // Arbitrarily start at the first site:
-                    Point closestSite = sites[0];
-                    double closestDistance = curPoint.Distance(closestSite);
+                    double closestDistance = curPoint.Distance(sites[0]);
+                    ushort closestIndex = 0;
 
                     // Start after the first site:
-                    foreach (Point site in sites.Skip(1))
+                    for (ushort i = 1; i < sites.Count; i++)
                     {
+                        Point site = sites[i];
                         double distance = curPoint.Distance(site);
                         // Better than the previous point:
                         if (distance < closestDistance)
                         {
-                            closestSite = site;
+                            closestIndex = i;
                             closestDistance = distance;
                         }
                     }
-                    output[col, row] = closestSite.color;
+                    output[col, row] = closestIndex;
                 }
             }
         }
