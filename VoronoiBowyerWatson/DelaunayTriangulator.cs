@@ -204,27 +204,15 @@ namespace VoronoiAlgorithms
 
         public VoronoiDiagram GenerateVoronoi () {
             Triangulate();
-            return GetDiagram(WithoutSupertriangle());
+            return this.VoronoiDiagram;
+        }
+
+        public VoronoiDiagram VoronoiDiagram {
+            get {
+                return new VoronoiDiagram(WithoutSupertriangle());
+            }
         }
     
-        private VoronoiDiagram GetDiagram(DelaunayTriangulator tri) {
-            VoronoiDiagram v = new VoronoiDiagram();
-            v.height = tri.height;
-            v.width = tri.width;
-            v.xOffset = tri.xOffset;
-            v.yOffset = tri.yOffset;
 
-            foreach (Vertex vertex in tri.triangles) {
-                foreach (Vertex neighbor in vertex.neighbors) {
-                    if (neighbor != null) {
-                        Point a = vertex.center;
-                        Point b = neighbor.center;
-                        v.edges.Add(new Edge(a, b));
-                    }
-                }
-                v.sites.UnionWith(vertex.points);
-            }
-            return v;
-        }
     }
 }

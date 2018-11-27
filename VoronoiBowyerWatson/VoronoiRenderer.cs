@@ -134,7 +134,7 @@ namespace VoronoiAlgorithms
             circlePen.Dispose();
         }
 
-        public static void DrawCircle(Pen pen, Models.Point center, double radius, Graphics g, double xOffset, double yOffset)
+        private static void DrawCircle(Pen pen, Models.Point center, double radius, Graphics g, double xOffset, double yOffset)
         {
             int minX = (int)(Math.Floor(center.x) - radius - xOffset);
             int minY = (int)(Math.Floor(center.y) - radius - yOffset);
