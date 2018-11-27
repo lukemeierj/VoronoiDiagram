@@ -56,7 +56,7 @@ namespace VoronoiAlgorithms
         // Uses same points with both methods.
         public static void RenderSameDiagram()
         {
-            List<Point> points = Point.GetRandomPoints(numPointsForPic, rangeForPic);
+            List<Point> points = Point.GetRandomPoints(numPointsForPic, 0, rangeForPic);
 
             DelaunayTriangulator tri = new DelaunayTriangulator(points);
             VoronoiDiagram voroEfficient = tri.GenerateVoronoi();
