@@ -71,6 +71,8 @@ namespace VoronoiAlgorithms
             config.yPadding += 50;
 
             VoronoiRenderer.DrawDiagram(voroEfficient, config, "bowyer_output.bmp");
+            VoronoiRenderer.DrawTriangulation(tri.WithoutSupertriangle(), config, "bowyer_triangulation_no_super.bmp");
+            VoronoiRenderer.DrawTriangulation(tri, config, "bowyer_triangulation_super.bmp");
 
             VoronoiRenderer.DrawDiagram(voroBrute, config, "brute_force_output.bmp");
         }

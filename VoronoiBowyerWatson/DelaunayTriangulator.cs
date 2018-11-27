@@ -31,12 +31,15 @@ namespace VoronoiAlgorithms
             double maxX = points.Max(point => point.x);
             double minX = points.Min(point => point.x);
 
+            int margin = Math.Max((int)(maxY-minY)/2, (int)(maxX-minX)/2);
 
             //Points to define a triangle that surrounds the axis aligned bounding box
-            Point upperLeft = new Point(minX, maxY);
-            Point lowerLeft = new Point(minX, minY - (maxY - minY));
-            Point upperRight = new Point(maxX + (maxX - minX), maxY);
-
+            // The bigger this box, the less likely we triangulate in such a way
+            // that leaves us with an incomplete voronoi diagram around the edges
+            Point upperLeft = new Point(minX - margin, maxY + margin);
+            Point lowerLeft = new Point(minX - margin, minY - (maxY - minY) - margin);
+            Point upperRight = new Point(maxX + (maxX - minX) + margin, maxY + margin);
+             
             List<Point> boundaries = new List<Point> { upperLeft, upperRight, lowerLeft };
             List<Vertex> neighbors = new List<Vertex> { Vertex.nullVertex, Vertex.nullVertex, Vertex.nullVertex };
             triangles.Add(new Vertex(boundaries, neighbors));
