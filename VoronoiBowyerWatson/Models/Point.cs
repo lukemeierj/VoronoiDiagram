@@ -61,13 +61,13 @@ namespace VoronoiAlgorithms.Models
             return (x == other.x && y == other.y);
         }
 
-        public static List<Point> GetRandomPoints (int numPoints, int range) {
+        public static List<Point> GetRandomPoints (int numPoints, int min, int max) {
             Random rand = new Random();
             List<Point> points = new List<Point>();
             for (int i = 0; i < numPoints; i++)
             {
-                int a = rand.Next(range);
-                int b = rand.Next(range);
+                int a = rand.Next(min, max);
+                int b = rand.Next(min, max);
                 Color randomColor = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
                 points.Add(new Point(a, b, randomColor));
             }

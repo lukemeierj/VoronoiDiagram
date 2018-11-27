@@ -7,29 +7,33 @@ namespace VoronoiAlgorithms
     public static class VoronoiRenderer
     {
         public static System.Drawing.Point TransposePoint(VoronoiAlgorithms.Models.Point p, RenderConfig config){
-            return new System.Drawing.Point((int)(p.x + config.xPadding), (int)(p.y + config.yPadding));
+            return new System.Drawing.Point((int)(p.x + config.xPadding + config.xOffset), (int)(p.y + config.yPadding + config.yOffset));
         }
 
         public static void DrawPoint(this Graphics g, VoronoiAlgorithms.Models.Point center, Brush pen, RenderConfig config, int radius = 4){
-            int xCoord = (int)Math.Floor(center.x - radius + config.xPadding);
-            int yCoord = (int)Math.Floor(center.y - radius + config.yPadding);
+            int xCoord = (int)Math.Floor(center.x - radius + config.xPadding + config.xOffset);
+            int yCoord = (int)Math.Floor(center.y - radius + config.yPadding + config.yOffset);
             g.FillEllipse(pen, xCoord, yCoord, radius * 2, radius * 2);
         }
 
 
         public static void DrawCircle(this Graphics g, Models.Point center, Pen pen, double radius, RenderConfig config)
         {
-            int minX = (int)(Math.Floor(center.x) - radius + config.xPadding);
-            int minY = (int)(Math.Floor(center.y) - radius + config.yPadding);
+            int minX = (int)(Math.Floor(center.x) - radius + config.xPadding + config.xOffset);
+            int minY = (int)(Math.Floor(center.y) - radius + config.yPadding + config.yOffset);
             Rectangle rect = new Rectangle(minX, minY, (int)radius * 2, (int)radius * 2);
             g.DrawEllipse(pen, rect);
 
         }
 
+        public static Bitmap CreateBitmap(RenderConfig config){
+            return new Bitmap(config.width + 2 * config.xPadding, config.height + 2 * config.yPadding);
+        }
+
         public static void DrawDiagram(VoronoiDiagram v, RenderConfig config, string filename)
         {
             // Initialize surface:
-            Bitmap image = new Bitmap(config.width, config.height);
+            Bitmap image = CreateBitmap(config);
             Graphics g = Graphics.FromImage(image);
             g.Clear(Color.White);
 
@@ -62,13 +66,22 @@ namespace VoronoiAlgorithms
         }
 
         public static void DrawDiagram (BruteForceVoronoi diagram, RenderConfig config, string filename) {
-            Bitmap image = new Bitmap(config.width, config.height);
-
-            for (int row = 0; row < config.height; row++)
+            Bitmap image = CreateBitmap(config);
+             
+            for (int row = 0; row < image.Height; row++)
             {
-                for (int col = 0; col < config.width; col++)
+                for (int col = 0; col < image.Width; col++)
                 {
-                    image.SetPixel(col, row, diagram.output[col, row]);
+                    bool initialPadding = col < config.xPadding || row < config.yPadding;
+                    bool finalPadding = (col - config.xPadding) >= diagram.output.GetLength(0) || (row - config.yPadding) >= diagram.output.GetLength(1);
+                   
+                    if (initialPadding || finalPadding){
+                        image.SetPixel(col, row, Color.White);
+                    }
+                    else {
+                        image.SetPixel(col, row, diagram.output[col - config.xPadding, row - config.yPadding]);
+                    }
+
                 }
             }
 
@@ -87,7 +100,7 @@ namespace VoronoiAlgorithms
         public static void DrawTriangulation(DelaunayTriangulator tri, RenderConfig config, string filename)
         {
             // Initialize surface:
-            Bitmap image = new Bitmap(config.width, config.height);
+            Bitmap image = CreateBitmap(config);
             Graphics g = Graphics.FromImage(image);
             g.Clear(Color.White);
 

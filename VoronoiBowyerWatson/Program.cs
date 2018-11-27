@@ -61,12 +61,18 @@ namespace VoronoiAlgorithms
             DelaunayTriangulator tri = new DelaunayTriangulator(points);
             VoronoiDiagram voroEfficient = tri.GenerateVoronoi();
 
-            VoronoiRenderer.DrawDiagram(voroEfficient, tri.FullFrameConfig, "bowyer_output.bmp");
 
             BruteForceVoronoi voroBrute = new BruteForceVoronoi(points);
             voroBrute.GenerateVoronoi();
 
-            VoronoiRenderer.DrawDiagram(voroBrute, voroBrute.FullFrameConfig, "brute_force_output.bmp");
+            RenderConfig config = voroBrute.FullFrameConfig;
+
+            config.xPadding += 50;
+            config.yPadding += 50;
+
+            VoronoiRenderer.DrawDiagram(voroEfficient, config, "bowyer_output.bmp");
+
+            VoronoiRenderer.DrawDiagram(voroBrute, config, "brute_force_output.bmp");
         }
 
         // Runs test for each mode:
@@ -126,7 +132,7 @@ namespace VoronoiAlgorithms
         static long RunTests(int trial, int numPoints, int max, TestMode t)
         {
             Stopwatch timer = new Stopwatch();
-            List<Point> sites = Point.GetRandomPoints(numPoints, max);
+            List<Point> sites = Point.GetRandomPoints(numPoints, 0, max);
 
             if (t == TestMode.BOWYER_WATSON)
             {
