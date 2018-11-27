@@ -7,10 +7,6 @@ namespace VoronoiAlgorithms.Models
     {
         public HashSet<Point> sites;
         public HashSet<Edge> edges;
-        public int height;
-        public int width;
-        public int xOffset;
-        public int yOffset;
 
         public VoronoiDiagram()
         {
@@ -21,11 +17,6 @@ namespace VoronoiAlgorithms.Models
         public VoronoiDiagram(DelaunayTriangulator triangulation){
             sites = new HashSet<Point>();
             edges = new HashSet<Edge>();
-
-            this.height = triangulation.height;
-            this.width = triangulation.width;
-            this.xOffset = triangulation.xOffset;
-            this.yOffset = triangulation.yOffset;
 
             foreach (Vertex vertex in triangulation.triangles)
             {

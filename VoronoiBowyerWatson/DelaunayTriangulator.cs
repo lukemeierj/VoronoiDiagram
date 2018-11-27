@@ -7,13 +7,6 @@ namespace VoronoiAlgorithms
 {
     public class DelaunayTriangulator
     {
-        // For image generation later on:
-        public int height;
-        public int width;
-        public int xOffset;
-        public int yOffset;
-        public double padding = 10;
-
         private List<Point> superTriangle = new List<Point>();
         public List<Vertex> triangles = new List<Vertex>();
         public List<Point> allPoints;
@@ -25,14 +18,9 @@ namespace VoronoiAlgorithms
             AddSuperTriangle(points);
         }
 
-        public DelaunayTriangulator(List<Vertex> triangles, List<Point> allPoints, int height, int width, int xOffset, int yOffset, double padding){
+        public DelaunayTriangulator(List<Vertex> triangles, List<Point> allPoints){
             this.triangles = triangles;
             this.allPoints = allPoints;
-            this.height = height;
-            this.width = width;
-            this.yOffset = yOffset;
-            this.xOffset = xOffset;
-            this.padding = padding;
         }
 
         //Creates a triangle that covers the axis aligned bounding box
@@ -43,15 +31,11 @@ namespace VoronoiAlgorithms
             double maxX = points.Max(point => point.x);
             double minX = points.Min(point => point.x);
 
-            height = (int)(maxY + Math.Abs(minY) + 2 * Math.Abs(padding));
-            width = (int)(maxX + Math.Abs(minX) + 2 * Math.Abs(padding));
-            xOffset = (int)Math.Abs(minX) - (int)padding;
-            yOffset = (int)Math.Abs(minY) - (int)padding;
 
             //Points to define a triangle that surrounds the axis aligned bounding box
-            Point upperLeft = new Point(minX - padding, maxY + padding);
-            Point lowerLeft = new Point(minX - padding, minY - (maxY - minY) - padding);
-            Point upperRight = new Point(maxX + (maxX - minX) + padding, maxY + padding);
+            Point upperLeft = new Point(minX, maxY);
+            Point lowerLeft = new Point(minX, minY - (maxY - minY));
+            Point upperRight = new Point(maxX + (maxX - minX), maxY);
 
             List<Point> boundaries = new List<Point> { upperLeft, upperRight, lowerLeft };
             List<Vertex> neighbors = new List<Vertex> { Vertex.nullVertex, Vertex.nullVertex, Vertex.nullVertex };
@@ -59,6 +43,21 @@ namespace VoronoiAlgorithms
 
             // Add supertriangle to triangulation:
             superTriangle = boundaries;
+        }
+
+        public RenderConfig FullFrameConfig {
+            get {
+
+                double maxY = allPoints.Max(point => point.y);
+                double minY = allPoints.Min(point => point.y);
+                double maxX = allPoints.Max(point => point.x);
+                double minX = allPoints.Min(point => point.x);
+
+                int height = (int)(maxY + Math.Abs(minY));
+                int width = (int)(maxX + Math.Abs(minX));
+
+                return new RenderConfig(width, height, 0, 0);
+            }
         }
 
         private void AddPoint(Point p){
@@ -199,7 +198,7 @@ namespace VoronoiAlgorithms
 
         public DelaunayTriangulator WithoutSupertriangle () {
             List<Vertex> vertices = new List<Vertex>(triangles.Where(triangle => !triangle.points.Intersect(superTriangle).Any()));
-            return new DelaunayTriangulator(vertices, allPoints, height, width, xOffset, yOffset, padding);
+            return new DelaunayTriangulator(vertices, allPoints);
         }
 
         public VoronoiDiagram GenerateVoronoi () {

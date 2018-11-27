@@ -59,11 +59,14 @@ namespace VoronoiAlgorithms
             List<Point> points = Point.GetRandomPoints(numPointsForPic, rangeForPic);
 
             DelaunayTriangulator tri = new DelaunayTriangulator(points);
-            VoronoiRenderer.DrawDiagram(tri.GenerateVoronoi(), "bowyer_output.bmp");
+            VoronoiDiagram voroEfficient = tri.GenerateVoronoi();
 
-            BruteForceVoronoi voro = new BruteForceVoronoi(points);
-            voro.GenerateVoronoi();
-            VoronoiRenderer.DrawDiagram(voro, "brute_force_output.bmp");
+            VoronoiRenderer.DrawDiagram(voroEfficient, tri.FullFrameConfig, "bowyer_output.bmp");
+
+            BruteForceVoronoi voroBrute = new BruteForceVoronoi(points);
+            voroBrute.GenerateVoronoi();
+
+            VoronoiRenderer.DrawDiagram(voroBrute, voroBrute.FullFrameConfig, "brute_force_output.bmp");
         }
 
         // Runs test for each mode:

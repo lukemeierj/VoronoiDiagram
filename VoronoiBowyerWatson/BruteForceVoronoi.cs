@@ -8,15 +8,14 @@ namespace VoronoiAlgorithms
     public class BruteForceVoronoi
     {
         public List<Point> sites;
-        public int width;
-        public int height;
+        private int width;
+        private int height;
         public System.Drawing.Color[,] output;
 
         // Initialize the calculator with sites. We find the width & height from the sites:
         public BruteForceVoronoi(List<Point> sites)
         {
             this.sites = sites;
-
             int maxY = (int)sites.Max(point => point.y);
             int minY = (int)sites.Min(point => point.y);
             int maxX = (int)sites.Max(point => point.x);
@@ -54,6 +53,12 @@ namespace VoronoiAlgorithms
                     }
                     output[col, row] = closestSite.color;
                 }
+            }
+        }
+
+        public RenderConfig FullFrameConfig {
+            get {
+                return new RenderConfig(width, height, 0, 0);
             }
         }
 
