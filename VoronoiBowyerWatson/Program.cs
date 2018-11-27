@@ -12,7 +12,7 @@ namespace VoronoiAlgorithms
         public enum TestMode { BOWYER_WATSON, BRUTE_FORCE_SCALE_PTS, BRUTE_FORCE_SCALE_RES };
 
         // For diagram BMP generation:
-        static readonly int numPointsForPic = 20;
+        static readonly int numPointsForPic = 100;
         static readonly int rangeForPic = 1000;
 
         // For normal point scaling:
