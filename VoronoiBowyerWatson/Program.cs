@@ -17,7 +17,7 @@ namespace VoronoiAlgorithms
 
         // For normal point scaling:
         static readonly int rangeMultiplier = 5;
-        static readonly int[] numPts = { 10, 100, 1000, 5000 };
+        static readonly int[] numPts = { 10, 100, 500, 1000, 2000, 4000, 6000 };
 
         // Variables for brute force testing resolution:
         static readonly int[] ranges = { 100, 500, 1000, 2000, 4000, 10000 };
