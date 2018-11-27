@@ -65,13 +65,13 @@ namespace VoronoiAlgorithms
 
         private void AddPoint(Point p){
             // Gets all the triangles whose circumspheres contain the added point: 
-            HashSet<Vertex> badTriangles = FindBadTriangles(p);
+            HashSet<Vertex> invalidTriangles = FindInvalidTriangles(p);
 
             // Remove the bad triangles from the total triangles:
-            triangles = new List<Vertex>(triangles.Except(badTriangles));
+            triangles = new List<Vertex>(triangles.Except(invalidTriangles));
 
             // Calculate the boundary edges of those triangles:
-            List<Edge> boundary = Boundary(badTriangles);
+            List<Edge> boundary = Boundary(invalidTriangles);
 
             // Get new triangulation between the boundary point and the added point:
             List<Vertex> newTriangles = GetNewTriangulation(p, boundary);
@@ -82,7 +82,7 @@ namespace VoronoiAlgorithms
 
         // Given a point, returns all of the triangles of this.triangles
         // which contain the point in their circumsphere
-        private HashSet<Vertex> FindBadTriangles(Point p){
+        private HashSet<Vertex> FindInvalidTriangles(Point p){
             HashSet<Vertex> invalidVertices = new HashSet<Vertex>();
             Queue<Vertex> search = new Queue<Vertex>();
             search.Enqueue(GetEnclosedVertex(p));
