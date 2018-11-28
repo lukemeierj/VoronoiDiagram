@@ -7,8 +7,6 @@ Once you have the program compiled and running, you can enter the following comm
 - `0` will generate a diagram for each algorithm. The colorful one (`brute_force_output.bmp`) is from the Brute Force algorithm. The grayscale one (`bowyer_output.bmp`) is from the Bowyer-Watson algorithm. They are both generated using the same 100 randomly generated input points in the range (0, 1000) inclusive.
 - `-1` exits the program.
 
-If you run the VoronoiAlgorithms project, you should get `img.bmp` saved to the `VoronoiBruteForce` folder of the solution.
-
 ## Windows
 
 1. Install Visual Studio
