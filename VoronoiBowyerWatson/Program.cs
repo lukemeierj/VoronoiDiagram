@@ -17,7 +17,7 @@ namespace VoronoiAlgorithms
 
         // For normal point scaling:
         static readonly int rangeMultiplier = 5;
-        static readonly int[] numPts = { 10, 100, 500, 1000, 2000, 4000, 6000 };
+        static readonly int[] numPts = { 10, 50, 75, 100, 150, 200, 250, 300, 400, 500, 1000, 2000, 4000, 6000 };
 
         // Variables for brute force testing resolution:
         static readonly int[] ranges = { 100, 500, 1000, 2000, 4000, 10000 };
@@ -80,7 +80,7 @@ namespace VoronoiAlgorithms
         // Runs test for each mode:
         static void RunAllTests () {
             RunAllTestsForMode(TestMode.BOWYER_WATSON);
-            RunAllTestsForMode(TestMode.BRUTE_FORCE_SCALE_RES);
+            //RunAllTestsForMode(TestMode.BRUTE_FORCE_SCALE_RES);
             RunAllTestsForMode(TestMode.BRUTE_FORCE_SCALE_PTS);
         }
 
