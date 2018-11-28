@@ -80,7 +80,7 @@ namespace VoronoiAlgorithms
         // Runs test for each mode:
         static void RunAllTests () {
             RunAllTestsForMode(TestMode.BOWYER_WATSON);
-            //RunAllTestsForMode(TestMode.BRUTE_FORCE_SCALE_RES);
+            RunAllTestsForMode(TestMode.BRUTE_FORCE_SCALE_RES);
             RunAllTestsForMode(TestMode.BRUTE_FORCE_SCALE_PTS);
         }
 
