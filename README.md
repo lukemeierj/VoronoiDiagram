@@ -1,4 +1,4 @@
-# Voronoi Algorithm Analysis
+﻿# Voronoi Algorithm Analysis
 The Bowyer–Watson sollution compared to a brute force implementation.
 
 ## macOS
@@ -11,4 +11,6 @@ _Try running the project first, but if you encounter errors when creating the bi
 2. Install the nuget packages for the project in order to get the `System.Drawing` library on mac. 
 3. Run `brew install mono-libgdiplus` for graphics functionality. I think `System.Drawing` relies on it.
 
-If you run the BruteForce project, you should get `img.bmp` saved to the `VoronoiBruteForce` folder of the sollution.
+4. In order to generate a diagram, enter 0 when prompted.
+5. Once you have generated a diagram, press 1 to run sample tests and time algorithm runs.
+If you run the BruteForce project, you should get `img.bmp` saved to the `VoronoiBruteForce` folder of the solution.
